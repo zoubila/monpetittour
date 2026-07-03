@@ -1,20 +1,47 @@
-
 services:
-###> doctrine/doctrine-bundle ###
+  monpetittour_php:
+    build: .
+    container_name: monpetittour_php
+    restart: unless-stopped
+    environment:
+      APP_ENV: prod
+    volumes:
+      - .:/var/www/html
+    networks:
+      - monpetittour_internal
+
+  monpetittour_nginx:
+    image: nginx:alpine
+    container_name: monpetittour_nginx
+    restart: unless-stopped
+    depends_on:
+      - monpetittour_php
+    volumes:
+      - .:/var/www/html:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - monpetittour_internal
+      - caddy_net
+
   database:
     image: postgres:${POSTGRES_VERSION:-16}-alpine
+    container_name: monpetittour_database
+    restart: unless-stopped
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-app}
-      # You should definitely change the password in production
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
-      POSTGRES_USER: ${POSTGRES_USER:-app}
+      POSTGRES_DB: ${POSTGRES_DB:-monpetittour}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ChangeMeLater}
+      POSTGRES_USER: ${POSTGRES_USER:-monpetittour}
     volumes:
       - database_data:/var/lib/postgresql/data:rw
-      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
-      # - ./docker/db/data:/var/lib/postgresql/data:rw
-###< doctrine/doctrine-bundle ###
+    networks:
+      - monpetittour_internal
 
 volumes:
-###> doctrine/doctrine-bundle ###
   database_data:
-###< doctrine/doctrine-bundle ###
+
+networks:
+  monpetittour_internal:
+    driver: bridge
+
+  caddy_net:
+    external: true
