@@ -1,15 +1,26 @@
-FROM php:8.3-fpm
+FROM dunglas/frankenphp:1-php8.3 AS app
 
-RUN apt-get update && apt-get install -y \
-    git unzip libicu-dev libzip-dev libpq-dev \
-    && docker-php-ext-install intl zip pdo pdo_pgsql opcache
+RUN install-php-extensions \
+    intl \
+    zip \
+    pdo_pgsql \
+    opcache
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-WORKDIR /var/www/html
+WORKDIR /app
+
+COPY composer.json composer.lock symfony.lock ./
+RUN composer install --no-dev --no-scripts --no-autoloader --no-interaction
 
 COPY . .
 
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+RUN composer dump-autoload --classmap-authoritative --no-dev \
+    && php bin/console cache:clear --env=prod \
+    && chown -R www-data:www-data var
 
-RUN chown -R www-data:www-data var
+COPY Caddyfile /etc/frankenphp/Caddyfile
+
+ENV APP_ENV=prod
+
+EXPOSE 80

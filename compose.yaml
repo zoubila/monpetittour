@@ -1,27 +1,21 @@
 services:
-  monpetittour_php:
+  app:
     build: .
-    container_name: monpetittour_php
+    container_name: monpetittour_app
     restart: unless-stopped
-    environment:
-      APP_ENV: prod
-    volumes:
-      - .:/var/www/html
-    networks:
-      - monpetittour_internal
-
-  monpetittour_nginx:
-    image: nginx:alpine
-    container_name: monpetittour_nginx
-    restart: unless-stopped
-    depends_on:
-      - monpetittour_php
-    volumes:
-      - .:/var/www/html:ro
-      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    env_file:
+      - .env.local
     networks:
       - monpetittour_internal
       - caddy_net
+    depends_on:
+      - database
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost/ > /dev/null || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
   database:
     image: postgres:${POSTGRES_VERSION:-16}-alpine
@@ -32,7 +26,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ChangeMeLater}
       POSTGRES_USER: ${POSTGRES_USER:-monpetittour}
     volumes:
-      - database_data:/var/lib/postgresql/data:rw
+      - database_data:/var/lib/postgresql/data
     networks:
       - monpetittour_internal
 
