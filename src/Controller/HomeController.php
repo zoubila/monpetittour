@@ -12,6 +12,6 @@ final class HomeController
     #[Route('/', name: 'home')]
     public function __invoke(): Response
     {
-        return new Response('Mon Petit Tour fonctionne ✅ pédale petit salopio');
+        return new Response(' ✅ pédale petit salopio');
     }
 }
