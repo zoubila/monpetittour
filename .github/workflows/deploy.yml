@@ -16,6 +16,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 2222  
           script: |
             cd /srv/apps/monpetittour
             git pull --rebase origin master
