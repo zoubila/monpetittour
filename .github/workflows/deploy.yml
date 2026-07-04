@@ -6,8 +6,32 @@ on:
       - master
 
 jobs:
+  quality:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: ctype, iconv, intl, zip, pdo_pgsql
+          coverage: none
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Run PHPStan
+        run: vendor/bin/phpstan analyse
+
+      - name: Run PHPUnit
+        run: APP_ENV=test php bin/phpunit
+
   deploy:
     runs-on: ubuntu-latest
+    needs: quality
 
     steps:
       - name: Deploy over SSH
@@ -16,7 +40,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 2222  
+          port: 2222
           script: |
             cd /srv/apps/monpetittour
             git pull --rebase origin master
