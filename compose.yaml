@@ -27,6 +27,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-monpetittour}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ChangeMeLater}
       POSTGRES_USER: ${POSTGRES_USER:-monpetittour}
+    ports:
+      - "${POSTGRES_PORT_BIND:-127.0.0.1:5432}:5432"
     volumes:
       - database_data:/var/lib/postgresql/data
     networks:
