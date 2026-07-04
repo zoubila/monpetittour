@@ -1,0 +1,15 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Domain\Exception;
+
+use DomainException;
+
+final class FantasyTeamAlreadyExists extends DomainException
+{
+    public function __construct()
+    {
+        parent::__construct('Tu as déjà composé ton équipe fantasy.');
+    }
+}
