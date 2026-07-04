@@ -11,6 +11,7 @@ use App\Application\DTO\StageSummary;
 use App\Application\DTO\StandingItem;
 use App\Application\Query\GetLeagueDashboardQuery;
 use App\Application\Repository\FantasyTeamRepositoryInterface;
+use App\Application\Service\CountryFlagResolver;
 use App\Domain\Exception\FantasyLeagueNotFound;
 use App\Infrastructure\Doctrine\Entity\ApplicationUser;
 use App\Infrastructure\Doctrine\Entity\FantasyLeagueRecord;
@@ -29,6 +30,7 @@ final readonly class GetLeagueDashboardHandler
         private FantasyTeamRepositoryInterface $teams,
         private StageRecordRepository $stages,
         private StageRiderResultRecordRepository $results,
+        private CountryFlagResolver $countryFlags,
     ) {
     }
 
@@ -155,6 +157,7 @@ final readonly class GetLeagueDashboardHandler
             $ranked[] = new RiderStageStandingItem(
                 $rank,
                 $result->rider()->name(),
+                $this->countryFlags->forNationality($result->rider()->nationality()),
                 $result->rider()->realTeam(),
                 $this->formatDuration($result->timeInSeconds()),
             );

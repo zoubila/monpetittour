@@ -9,6 +9,7 @@ final readonly class RiderStageStandingItem
     public function __construct(
         public int $rank,
         public string $riderName,
+        public string $nationalityFlag,
         public string $realTeam,
         public string $time,
     ) {

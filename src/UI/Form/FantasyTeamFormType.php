@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\UI\Form;
 
+use App\Application\Service\CountryFlagResolver;
 use App\Infrastructure\Doctrine\Entity\RiderRecord;
 use App\Infrastructure\Doctrine\Repository\RiderRecordRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -16,6 +17,10 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 final class FantasyTeamFormType extends AbstractType
 {
+    public function __construct(private readonly CountryFlagResolver $countryFlags)
+    {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -24,7 +29,11 @@ final class FantasyTeamFormType extends AbstractType
             ])
             ->add('riders', EntityType::class, [
                 'class' => RiderRecord::class,
-                'choice_label' => 'name',
+                'choice_label' => fn (RiderRecord $rider): string => trim(sprintf(
+                    '%s %s',
+                    $this->countryFlags->forNationality($rider->nationality()),
+                    $rider->name(),
+                )),
                 'query_builder' => static fn (RiderRecordRepository $repository) => $repository
                     ->createQueryBuilder('rider')
                     ->orderBy('rider.name', 'ASC'),

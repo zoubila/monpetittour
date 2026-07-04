@@ -12,6 +12,7 @@ use App\Application\DTO\UserTeamSummary;
 use App\Application\Repository\FantasyLeagueRepositoryInterface;
 use App\Application\Repository\FantasyTeamRepositoryInterface;
 use App\Application\Repository\RiderReadRepositoryInterface;
+use App\Application\Service\CountryFlagResolver;
 use App\Infrastructure\Doctrine\Entity\ApplicationUser;
 use App\Infrastructure\Doctrine\Entity\FantasyLeagueRecord;
 use App\Infrastructure\Doctrine\Entity\FantasyTeamRecord;
@@ -27,6 +28,7 @@ final readonly class GetHomeDashboardHandler
         private FantasyLeagueRepositoryInterface $leagues,
         private StageRecordRepository $stages,
         private StageRiderResultRecordRepository $results,
+        private CountryFlagResolver $countryFlags,
     ) {
     }
 
@@ -107,6 +109,7 @@ final readonly class GetHomeDashboardHandler
                 $rider->name(),
                 $rider->realTeam(),
                 $rider->nationality(),
+                $this->countryFlags->forNationality($rider->nationality()),
                 $rider->marketValueInEuros(),
                 $rider->specialty()?->value,
             );

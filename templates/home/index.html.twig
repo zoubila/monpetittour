@@ -43,7 +43,10 @@
                     <ul class="mt-5 space-y-3">
                         {% for rider in dashboard.team.riders %}
                             <li class="flex items-center justify-between gap-3 border-t border-slate-100 pt-3 text-sm">
-                                <span class="font-bold">{{ rider.name }}</span>
+                                <span class="font-bold">
+                                    {% if rider.nationalityFlag %}<span aria-hidden="true">{{ rider.nationalityFlag }}</span>{% endif %}
+                                    {{ rider.name }}
+                                </span>
                                 <span class="text-slate-600">{{ rider.marketValueInEuros|number_format(0, ',', ' ') }} €</span>
                             </li>
                         {% endfor %}

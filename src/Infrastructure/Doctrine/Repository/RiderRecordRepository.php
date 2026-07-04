@@ -9,6 +9,7 @@ use App\Application\DTO\RiderDetails;
 use App\Application\DTO\RiderListItem;
 use App\Application\Repository\RiderReadRepositoryInterface;
 use App\Application\Repository\RiderWriteRepositoryInterface;
+use App\Application\Service\CountryFlagResolver;
 use App\Domain\Entity\Rider;
 use App\Infrastructure\Doctrine\DoctrineFantasyCatalog;
 use App\Infrastructure\Doctrine\Entity\RiderRecord;
@@ -23,8 +24,10 @@ final class RiderRecordRepository extends ServiceEntityRepository implements Rid
 {
     private EntityManagerInterface $entityManager;
 
-    public function __construct(ManagerRegistry $registry)
-    {
+    public function __construct(
+        ManagerRegistry $registry,
+        private readonly CountryFlagResolver $countryFlags,
+    ) {
         parent::__construct($registry, RiderRecord::class);
         $this->entityManager = $this->getEntityManager();
     }
@@ -35,12 +38,13 @@ final class RiderRecordRepository extends ServiceEntityRepository implements Rid
     public function listRiders(): array
     {
         return array_map(
-            static fn (RiderRecord $rider): RiderListItem => new RiderListItem(
+            fn (RiderRecord $rider): RiderListItem => new RiderListItem(
                 $rider->id(),
                 $rider->slug(),
                 $rider->name(),
                 $rider->realTeam(),
                 $rider->nationality(),
+                $this->countryFlags->forNationality($rider->nationality()),
                 $rider->marketValueInEuros(),
                 $rider->specialty()?->value,
             ),
@@ -61,6 +65,7 @@ final class RiderRecordRepository extends ServiceEntityRepository implements Rid
             $rider->name(),
             $rider->realTeam(),
             $rider->nationality(),
+            $this->countryFlags->forNationality($rider->nationality()),
             $rider->marketValueInEuros(),
             $rider->specialty()?->value,
         );

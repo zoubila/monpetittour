@@ -12,6 +12,7 @@ final readonly class RiderListItem
         public string $name,
         public string $realTeam,
         public string $nationality,
+        public string $nationalityFlag,
         public int $marketValueInEuros,
         public ?string $specialty,
     ) {
