@@ -31,6 +31,8 @@ class RiderRecord
         private int $marketValueInEuros,
         #[ORM\Column(length: 40, nullable: true, enumType: RiderSpecialty::class)]
         private ?RiderSpecialty $specialty,
+        #[ORM\Column(options: ['default' => true])]
+        private bool $isStillRacing = true,
     ) {
     }
 
@@ -67,5 +69,15 @@ class RiderRecord
     public function specialty(): ?RiderSpecialty
     {
         return $this->specialty;
+    }
+
+    public function isStillRacing(): bool
+    {
+        return $this->isStillRacing;
+    }
+
+    public function markAbandoned(): void
+    {
+        $this->isStillRacing = false;
     }
 }
