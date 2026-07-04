@@ -23,8 +23,7 @@ console:
 	$(DC_DEV) exec app php bin/console
 
 test:
-	$(DC_DEV) exec app php bin/phpunit
-
+	$(DC_DEV) exec -e APP_ENV=test app php bin/phpunit
 stan:
 	$(DC_DEV) exec app vendor/bin/phpstan analyse
 
