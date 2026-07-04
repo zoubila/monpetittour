@@ -1,0 +1,36 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/dev/Dockerfile
+    container_name: monpetittour_app_dev
+    env_file:
+      - .env.local
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/app
+      - vendor_data:/app/vendor
+      - var_data:/app/var
+    depends_on:
+      - database
+    environment:
+      APP_ENV: dev
+      XDEBUG_MODE: debug,develop
+
+  database:
+    image: postgres:16-alpine
+    container_name: monpetittour_database_dev
+    environment:
+      POSTGRES_DB: monpetittour
+      POSTGRES_PASSWORD: monpetittour
+      POSTGRES_USER: monpetittour
+    ports:
+      - "54329:5432"
+    volumes:
+      - database_data_dev:/var/lib/postgresql/data
+
+volumes:
+  vendor_data:
+  var_data:
+  database_data_dev:
