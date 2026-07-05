@@ -93,8 +93,20 @@
                         </div>
 
                         <div>
-                            <h3 class="text-lg font-extrabold">Classement riders</h3>
-                            <div class="mt-3 max-h-96 overflow-auto rounded-lg border border-slate-200">
+                            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                <div>
+                                    <h3 class="text-lg font-extrabold">Classement riders</h3>
+                                    <p class="mt-1 text-xs font-semibold text-slate-600"><span data-stage-rider-visible-count>{{ stageDashboard.riderStandings|length }}</span> coureurs affichés</p>
+                                </div>
+                                <label class="inline-flex cursor-pointer items-center gap-3 text-sm font-bold text-slate-700">
+                                    <input class="peer sr-only" type="checkbox" data-stage-rider-team-toggle>
+                                    <span class="h-6 w-11 rounded-full bg-slate-300 p-1 transition peer-checked:bg-emerald-700">
+                                        <span class="block h-4 w-4 rounded-full bg-white transition peer-checked:translate-x-5"></span>
+                                    </span>
+                                    Mes coureurs
+                                </label>
+                            </div>
+                            <div class="mt-3 max-h-96 overflow-auto rounded-lg border border-slate-200" data-stage-rider-ranking>
                                 <table class="w-full text-left text-sm">
                                     <thead class="bg-slate-100 text-xs font-bold uppercase tracking-wide text-slate-600">
                                         <tr>
@@ -106,7 +118,11 @@
                                     </thead>
                                     <tbody class="divide-y divide-slate-200">
                                         {% for standing in stageDashboard.riderStandings %}
-                                            <tr class="{{ standing.isInCurrentUserTeam ? 'border-l-4 border-emerald-600 bg-emerald-50/80' : '' }}">
+                                            <tr
+                                                class="{{ standing.isInCurrentUserTeam ? 'border-l-4 border-emerald-600 bg-emerald-50/80' : '' }}"
+                                                data-stage-rider-row
+                                                data-current-user-rider="{{ standing.isInCurrentUserTeam ? '1' : '0' }}"
+                                            >
                                                 <td class="px-4 py-3 font-extrabold">#{{ standing.rank }}</td>
                                                 <td class="px-4 py-3">
                                                     <span class="block font-bold">
@@ -185,6 +201,37 @@
                 if (event.key === 'Escape' && !modal.classList.contains('hidden')) {
                     close();
                 }
+            });
+        })();
+
+        (() => {
+            document.querySelectorAll('[data-stage-rider-ranking]').forEach((ranking) => {
+                const wrapper = ranking.closest('div')?.parentElement;
+                const toggle = wrapper?.querySelector('[data-stage-rider-team-toggle]');
+                const count = wrapper?.querySelector('[data-stage-rider-visible-count]');
+                const rows = Array.from(ranking.querySelectorAll('[data-stage-rider-row]'));
+
+                if (!toggle || !count || rows.length === 0) {
+                    return;
+                }
+
+                const refresh = () => {
+                    let visibleCount = 0;
+
+                    rows.forEach((row) => {
+                        const shouldShow = !toggle.checked || row.dataset.currentUserRider === '1';
+
+                        row.classList.toggle('hidden', !shouldShow);
+                        if (shouldShow) {
+                            visibleCount += 1;
+                        }
+                    });
+
+                    count.textContent = visibleCount.toString();
+                };
+
+                toggle.addEventListener('change', refresh);
+                refresh();
             });
         })();
     </script>

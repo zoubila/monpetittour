@@ -115,9 +115,12 @@ final class FantasyHomeFlowTest extends WebTestCase
         self::assertSelectorTextContains('body', 'Voir la carte');
         self::assertSelectorTextContains('body', 'Classement users');
         self::assertSelectorTextContains('body', 'Classement riders');
+        self::assertSelectorTextContains('body', 'Mes coureurs');
         self::assertSelectorTextContains('body', 'Écart');
         self::assertSelectorTextContains('body', 'Les Bordures');
         self::assertSelectorTextContains('body', 'Tadej Pogacar');
+        self::assertStringContainsString('data-stage-rider-team-toggle', (string) $client->getResponse()->getContent());
+        self::assertStringContainsString('data-stage-rider-row', (string) $client->getResponse()->getContent());
         self::assertStringContainsString(
             'border-l-4 border-emerald-600 bg-emerald-50/80',
             (string) $client->getResponse()->getContent(),
