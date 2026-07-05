@@ -24,6 +24,14 @@ final class RiderPagesTest extends WebTestCase
         self::assertSelectorTextContains('body', 'Tadej Pogacar');
         self::assertSelectorTextContains('body', 'Visma Lease a Bike');
         self::assertSelectorTextContains('body', '450 000 €');
+        self::assertSelectorTextContains('body', 'Total');
+        self::assertSelectorTextContains('body', 'Mes coureurs');
+        self::assertSelectorTextContains('body', 'Trier par');
+        self::assertSelectorExists('input[data-rider-search]');
+        self::assertSelectorExists('select[data-rider-sort]');
+        self::assertStringContainsString('data-current-user-riders-toggle', (string) $client->getResponse()->getContent());
+        self::assertStringContainsString('data-rider-card', (string) $client->getResponse()->getContent());
+        self::assertStringContainsString('data-rider-search-value', (string) $client->getResponse()->getContent());
     }
 
     public function testRiderDetailsDisplaysFixtureRider(): void
@@ -38,6 +46,8 @@ final class RiderPagesTest extends WebTestCase
         self::assertSelectorTextContains('h1', 'Tadej Pogacar');
         self::assertSelectorTextContains('body', 'UAE Team Emirates');
         self::assertSelectorTextContains('body', 'leader');
+        self::assertSelectorTextContains('body', 'Temps cumulé');
+        self::assertSelectorTextContains('body', 'Écart cumulé');
     }
 
     /**

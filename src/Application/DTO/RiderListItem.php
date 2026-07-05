@@ -15,6 +15,11 @@ final readonly class RiderListItem
         public string $nationalityFlag,
         public int $marketValueInEuros,
         public ?string $specialty,
+        public ?int $totalTimeInSeconds,
+        public string $formattedTotalTime,
+        public ?int $totalGapInSeconds,
+        public string $formattedTotalGap,
+        public bool $isInCurrentUserTeam,
     ) {
     }
 }

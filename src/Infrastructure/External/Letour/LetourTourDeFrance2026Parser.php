@@ -71,35 +71,61 @@ final class LetourTourDeFrance2026Parser
     {
         $document = $this->document($html);
         $xpath = new \DOMXPath($document);
-        $rows = $xpath->query(
-            '//tr[contains(concat(" ", normalize-space(@class), " "), " rankingTables__row ")]',
+        $tables = $xpath->query(
+            '//table[.//th[contains(normalize-space(.), "Coureur")]]',
         );
 
         $results = [];
-        foreach ($rows ?: [] as $row) {
-            if (!$row instanceof \DOMElement) {
+        foreach ($tables ?: [] as $table) {
+            if (!$table instanceof \DOMElement) {
                 continue;
             }
 
-            $cells = $this->cells($row);
-            if (count($cells) < 5 || preg_match('/^\d+$/', $cells[0]) !== 1) {
-                continue;
-            }
+            foreach ($this->stageResultRows($table) as $row) {
+                $cells = $this->cells($row);
+                if (count($cells) < 5 || preg_match('/^\d+$/', $cells[0]) !== 1) {
+                    continue;
+                }
 
-            $timeInSeconds = $this->letourDurationToSeconds($cells[4]);
-            if ($timeInSeconds === null) {
-                continue;
-            }
+                $timeInSeconds = $this->letourDurationToSeconds($cells[4]);
+                if ($timeInSeconds === null) {
+                    continue;
+                }
 
-            $results[] = new ImportedStageResult(
-                (int) $cells[0],
-                $this->riderName($row, $cells[1]),
-                str_replace('|', '', $cells[3]),
-                $timeInSeconds,
-            );
+                $gapInSeconds = $this->letourGapToSeconds($cells[5] ?? '-');
+                if ($gapInSeconds === null) {
+                    continue;
+                }
+
+                $results[] = new ImportedStageResult(
+                    (int) $cells[0],
+                    $this->riderName($row, $cells[1]),
+                    str_replace('|', '', $cells[3]),
+                    $timeInSeconds,
+                    $gapInSeconds,
+                );
+            }
         }
 
         return $results;
+    }
+
+    public function parseStageIndividualResultsPath(string $html): ?string
+    {
+        preg_match_all('/data-ajax-stack\s*=\s*(?<stack>\{[^}]+})/i', $html, $matches);
+
+        foreach ($matches['stack'] as $encodedStack) {
+            $decodedStack = html_entity_decode($encodedStack, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $stack = json_decode($decodedStack, true);
+
+            if (!is_array($stack) || !isset($stack['ite']) || !is_string($stack['ite'])) {
+                continue;
+            }
+
+            return $this->firstLazyImageSource($stack['ite']);
+        }
+
+        return null;
     }
 
     private function document(string $html): \DOMDocument
@@ -129,6 +155,22 @@ final class LetourTourDeFrance2026Parser
         }
 
         return $cells;
+    }
+
+    /**
+     * @return list<\DOMElement>
+     */
+    private function stageResultRows(\DOMElement $table): array
+    {
+        $rows = [];
+
+        foreach ($table->getElementsByTagName('tr') as $row) {
+            if (str_contains($row->getAttribute('class'), 'rankingTables__row')) {
+                $rows[] = $row;
+            }
+        }
+
+        return $rows;
     }
 
     /**
@@ -198,5 +240,16 @@ final class LetourTourDeFrance2026Parser
         }
 
         return ((int) $matches['hours'] * 3_600) + ((int) $matches['minutes'] * 60) + (int) $matches['seconds'];
+    }
+
+    private function letourGapToSeconds(string $gap): ?int
+    {
+        $gap = trim(str_replace("\u{00a0}", ' ', $gap));
+
+        if ($gap === '' || $gap === '-') {
+            return 0;
+        }
+
+        return $this->letourDurationToSeconds(ltrim($gap, '+ '));
     }
 }

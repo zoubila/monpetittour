@@ -11,6 +11,7 @@ final readonly class ImportedStageResult
         public string $riderName,
         public string $realTeam,
         public int $timeInSeconds,
+        public int $gapInSeconds,
     ) {
     }
 }

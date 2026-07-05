@@ -9,12 +9,59 @@
                 <p class="text-sm font-bold uppercase tracking-wide text-emerald-700">Startlist fixtures</p>
                 <h1 class="mt-2 text-3xl font-extrabold tracking-tight text-slate-950">Coureurs disponibles</h1>
             </div>
-            <p class="text-sm font-semibold text-slate-600">{{ riders|length }} coureurs chargés</p>
+            <div class="flex flex-col gap-3 sm:items-end">
+                <p class="text-sm font-semibold text-slate-600"><span data-rider-count>{{ riders|length }}</span> coureurs affichés</p>
+            </div>
         </div>
 
-        <div class="mt-8 grid gap-4 md:grid-cols-2">
+        <div class="mt-8 grid gap-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm lg:grid-cols-[minmax(0,1fr)_240px_auto] lg:items-end">
+            <div>
+                <label class="block text-sm font-bold text-slate-800" for="rider-search">Recherche</label>
+                <input
+                    id="rider-search"
+                    class="mt-2 w-full rounded-md border border-slate-300 px-3 py-2 text-sm font-semibold outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100"
+                    type="search"
+                    placeholder="Nom, pays, équipe..."
+                    data-rider-search
+                >
+            </div>
+            <div>
+                <label class="block text-sm font-bold text-slate-800" for="rider-sort">Trier par</label>
+                <select
+                    id="rider-sort"
+                    class="mt-2 w-full rounded-md border border-slate-300 px-3 py-2 text-sm font-semibold outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100"
+                    data-rider-sort
+                >
+                    <option value="name-asc">Alphabet A-Z</option>
+                    <option value="name-desc">Alphabet Z-A</option>
+                    <option value="price-asc">Prix croissant</option>
+                    <option value="price-desc">Prix décroissant</option>
+                    <option value="country-asc">Pays A-Z</option>
+                    <option value="team-asc">Équipe A-Z</option>
+                </select>
+            </div>
+            <label class="inline-flex cursor-pointer items-center gap-3 text-sm font-bold text-slate-700 lg:pb-2">
+                <input class="peer sr-only" type="checkbox" data-current-user-riders-toggle>
+                <span class="h-6 w-11 rounded-full bg-slate-300 p-1 transition peer-checked:bg-emerald-700">
+                    <span class="block h-4 w-4 rounded-full bg-white transition peer-checked:translate-x-5"></span>
+                </span>
+                Mes coureurs
+            </label>
+        </div>
+
+        <div class="mt-8 grid gap-4 md:grid-cols-2" data-riders-list>
             {% for rider in riders %}
-                <a class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm hover:border-emerald-600" href="{{ path('rider_show', { slug: rider.slug }) }}">
+                <a
+                    class="rounded-lg border p-5 shadow-sm hover:border-emerald-600 {{ rider.isInCurrentUserTeam ? 'border-emerald-600 bg-emerald-50/80' : 'border-slate-200 bg-white' }}"
+                    href="{{ path('rider_show', { slug: rider.slug }) }}"
+                    data-rider-card
+                    data-current-user-rider="{{ rider.isInCurrentUserTeam ? '1' : '0' }}"
+                    data-rider-name="{{ rider.name|lower }}"
+                    data-rider-country="{{ rider.nationality|lower }}"
+                    data-rider-team="{{ rider.realTeam|lower }}"
+                    data-rider-price="{{ rider.marketValueInEuros }}"
+                    data-rider-search-value="{{ (rider.name ~ ' ' ~ rider.realTeam ~ ' ' ~ rider.nationality ~ ' ' ~ (rider.specialty ?? '') ~ ' ' ~ rider.marketValueInEuros)|lower }}"
+                >
                     <div class="flex items-start justify-between gap-4">
                         <div>
                             <h2 class="text-lg font-extrabold text-slate-950">
@@ -25,9 +72,87 @@
                         </div>
                         <p class="shrink-0 rounded-md bg-emerald-50 px-3 py-1 text-sm font-extrabold text-emerald-800">{{ rider.marketValueInEuros|number_format(0, ',', ' ') }} €</p>
                     </div>
-                    <p class="mt-4 text-sm font-semibold text-slate-700">{{ rider.specialty ?? 'Profil polyvalent' }}</p>
+                    <div class="mt-4 grid gap-2 text-sm font-semibold text-slate-700 sm:grid-cols-3">
+                        <p>{{ rider.specialty ?? 'Profil polyvalent' }}</p>
+                        <p>Total {{ rider.formattedTotalTime }}</p>
+                        <p>{{ rider.formattedTotalGap }}</p>
+                    </div>
                 </a>
             {% endfor %}
         </div>
+        <p class="mt-8 hidden rounded-md border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-600" data-rider-empty-state>Aucun coureur ne correspond à ta recherche.</p>
     </section>
+
+    <script>
+        (() => {
+            const toggle = document.querySelector('[data-current-user-riders-toggle]');
+            const search = document.querySelector('[data-rider-search]');
+            const sort = document.querySelector('[data-rider-sort]');
+            const list = document.querySelector('[data-riders-list]');
+            const count = document.querySelector('[data-rider-count]');
+            const emptyState = document.querySelector('[data-rider-empty-state]');
+            const cards = Array.from(document.querySelectorAll('[data-rider-card]'));
+
+            if (!toggle || !search || !sort || !list || !count || !emptyState || cards.length === 0) {
+                return;
+            }
+
+            const normalize = (value) => value
+                .toString()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase()
+                .trim();
+
+            const compareText = (left, right) => left.localeCompare(right, 'fr', { sensitivity: 'base' });
+
+            const sortCards = () => {
+                const sortedCards = [...cards].sort((left, right) => {
+                    switch (sort.value) {
+                        case 'name-desc':
+                            return compareText(right.dataset.riderName || '', left.dataset.riderName || '');
+                        case 'price-asc':
+                            return Number(left.dataset.riderPrice) - Number(right.dataset.riderPrice);
+                        case 'price-desc':
+                            return Number(right.dataset.riderPrice) - Number(left.dataset.riderPrice);
+                        case 'country-asc':
+                            return compareText(left.dataset.riderCountry || '', right.dataset.riderCountry || '');
+                        case 'team-asc':
+                            return compareText(left.dataset.riderTeam || '', right.dataset.riderTeam || '');
+                        case 'name-asc':
+                        default:
+                            return compareText(left.dataset.riderName || '', right.dataset.riderName || '');
+                    }
+                });
+
+                sortedCards.forEach((card) => list.appendChild(card));
+            };
+
+            const refresh = () => {
+                sortCards();
+                let visibleCount = 0;
+                const query = normalize(search.value);
+
+                cards.forEach((card) => {
+                    const isCurrentUserRider = card.dataset.currentUserRider === '1';
+                    const matchesCurrentUserFilter = !toggle.checked || isCurrentUserRider;
+                    const matchesSearch = query === '' || normalize(card.dataset.riderSearchValue || '').includes(query);
+                    const shouldShow = matchesCurrentUserFilter && matchesSearch;
+
+                    card.classList.toggle('hidden', !shouldShow);
+                    if (shouldShow) {
+                        visibleCount += 1;
+                    }
+                });
+
+                count.textContent = visibleCount.toString();
+                emptyState.classList.toggle('hidden', visibleCount > 0);
+            };
+
+            toggle.addEventListener('change', refresh);
+            search.addEventListener('input', refresh);
+            sort.addEventListener('change', refresh);
+            refresh();
+        })();
+    </script>
 {% endblock %}

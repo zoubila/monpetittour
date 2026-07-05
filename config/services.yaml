@@ -30,6 +30,8 @@ services:
         alias: App\Infrastructure\Doctrine\Repository\RiderRecordRepository
     App\Application\Repository\RiderWriteRepositoryInterface:
         alias: App\Infrastructure\Doctrine\Repository\RiderRecordRepository
+    App\Application\Repository\RiderResultReadRepositoryInterface:
+        alias: App\Infrastructure\Doctrine\Repository\StageRiderResultRecordRepository
     App\Application\Repository\FantasyTeamRepositoryInterface:
         alias: App\Infrastructure\Doctrine\Repository\FantasyTeamRecordRepository
     App\Application\Repository\FantasyLeagueRepositoryInterface:

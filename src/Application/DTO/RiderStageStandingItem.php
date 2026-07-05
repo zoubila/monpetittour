@@ -12,6 +12,9 @@ final readonly class RiderStageStandingItem
         public string $nationalityFlag,
         public string $realTeam,
         public string $time,
+        public int $gapInSeconds,
+        public string $gap,
+        public bool $isInCurrentUserTeam,
     ) {
     }
 }

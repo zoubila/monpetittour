@@ -43,13 +43,19 @@ final readonly class GetLeagueDashboardHandler
         }
 
         $teams = $this->teamsFor($league);
+        $currentUserRiderIds = $this->currentUserRiderIds($teams[$query->user->username()] ?? null);
 
         return new LeagueDashboard(
             $league->name(),
             $league->code(),
-            $this->generalStandings($teams),
+            $this->generalStandings($teams, $query->user->username()),
             array_map(
-                fn (StageRecord $stage): StageLeagueDashboard => $this->stageDashboard($stage, $teams),
+                fn (StageRecord $stage): StageLeagueDashboard => $this->stageDashboard(
+                    $stage,
+                    $teams,
+                    $query->user->username(),
+                    $currentUserRiderIds,
+                ),
                 $this->stages->findAllOrderedByNumber(),
             ),
         );
@@ -76,7 +82,7 @@ final readonly class GetLeagueDashboardHandler
      * @param array<string, FantasyTeamRecord> $teams
      * @return list<StandingItem>
      */
-    private function generalStandings(array $teams): array
+    private function generalStandings(array $teams, string $currentUsername): array
     {
         $standings = [];
 
@@ -89,13 +95,19 @@ final readonly class GetLeagueDashboardHandler
             ];
         }
 
-        return $this->rankTeamRows($standings);
+        return $this->rankTeamRows($standings, $currentUsername);
     }
 
     /**
      * @param array<string, FantasyTeamRecord> $teams
+     * @param list<int> $currentUserRiderIds
      */
-    private function stageDashboard(StageRecord $stage, array $teams): StageLeagueDashboard
+    private function stageDashboard(
+        StageRecord $stage,
+        array $teams,
+        string $currentUsername,
+        array $currentUserRiderIds,
+    ): StageLeagueDashboard
     {
         $teamRows = [];
         foreach ($teams as $ownerUsername => $team) {
@@ -116,8 +128,8 @@ final readonly class GetLeagueDashboardHandler
                 $stage->positiveElevationInMeters(),
                 $stage->mapPath(),
             ),
-            $this->rankTeamRows($teamRows),
-            $this->riderStandings($stage),
+            $this->rankTeamRows($teamRows, $currentUsername),
+            $this->riderStandings($stage, $currentUserRiderIds),
         );
     }
 
@@ -125,13 +137,15 @@ final readonly class GetLeagueDashboardHandler
      * @param list<array{team: FantasyTeamRecord, ownerUsername: string, time: int}> $rows
      * @return list<StandingItem>
      */
-    private function rankTeamRows(array $rows): array
+    private function rankTeamRows(array $rows, string $currentUsername): array
     {
         usort($rows, static fn (array $left, array $right): int => $left['time'] <=> $right['time']);
 
         $ranked = [];
         $rank = 1;
+        $bestTime = $rows[0]['time'] ?? 0;
         foreach ($rows as $row) {
+            $gapInSeconds = $row['time'] - $bestTime;
             $ranked[] = new StandingItem(
                 $rank,
                 $row['team']->name(),
@@ -139,6 +153,9 @@ final readonly class GetLeagueDashboardHandler
                 $this->spentBudget($row['team']),
                 $row['time'],
                 $this->formatDuration($row['time']),
+                $gapInSeconds,
+                $this->formatGap($gapInSeconds),
+                $row['ownerUsername'] === $currentUsername,
             );
             ++$rank;
         }
@@ -147,9 +164,10 @@ final readonly class GetLeagueDashboardHandler
     }
 
     /**
+     * @param list<int> $currentUserRiderIds
      * @return list<RiderStageStandingItem>
      */
-    private function riderStandings(StageRecord $stage): array
+    private function riderStandings(StageRecord $stage, array $currentUserRiderIds): array
     {
         $ranked = [];
         $rank = 1;
@@ -161,11 +179,26 @@ final readonly class GetLeagueDashboardHandler
                 $this->countryFlags->forNationality($result->rider()->nationality()),
                 $result->rider()->realTeam(),
                 $this->formatDuration($result->timeInSeconds()),
+                $result->gapInSeconds(),
+                $this->formatGap($result->gapInSeconds()),
+                in_array($result->rider()->id(), $currentUserRiderIds, true),
             );
             ++$rank;
         }
 
         return $ranked;
+    }
+
+    /**
+     * @return list<int>
+     */
+    private function currentUserRiderIds(?FantasyTeamRecord $team): array
+    {
+        if (!$team instanceof FantasyTeamRecord) {
+            return [];
+        }
+
+        return array_map(static fn (RiderRecord $rider): int => $rider->id(), $team->riders());
     }
 
     private function spentBudget(FantasyTeamRecord $team): int
@@ -184,5 +217,32 @@ final readonly class GetLeagueDashboardHandler
         $seconds = $remainingSeconds % 60;
 
         return sprintf('%02dh %02dmin %02ds', $hours, $minutes, $seconds);
+    }
+
+    private function formatGap(int $seconds): string
+    {
+        if ($seconds <= 0) {
+            return '-';
+        }
+
+        return sprintf('+ %s', $this->formatShortDuration($seconds));
+    }
+
+    private function formatShortDuration(int $seconds): string
+    {
+        $hours = intdiv($seconds, 3_600);
+        $remainingSeconds = $seconds % 3_600;
+        $minutes = intdiv($remainingSeconds, 60);
+        $seconds = $remainingSeconds % 60;
+
+        if ($hours > 0) {
+            return sprintf('%02dh %02dmin %02ds', $hours, $minutes, $seconds);
+        }
+
+        if ($minutes > 0) {
+            return sprintf('%02dmin %02ds', $minutes, $seconds);
+        }
+
+        return sprintf('%02ds', $seconds);
     }
 }

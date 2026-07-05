@@ -23,15 +23,17 @@
                             <th class="px-4 py-3">Équipe</th>
                             <th class="px-4 py-3">Manager</th>
                             <th class="px-4 py-3">Temps total</th>
+                            <th class="px-4 py-3">Écart</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200">
                         {% for standing in league.generalStandings %}
-                            <tr>
+                            <tr class="{{ standing.isCurrentUser ? 'border-l-4 border-emerald-600 bg-emerald-50/80' : '' }}">
                                 <td class="px-4 py-3 font-extrabold">#{{ standing.rank }}</td>
                                 <td class="px-4 py-3 font-bold">{{ standing.teamName }}</td>
                                 <td class="px-4 py-3">{{ standing.ownerUsername }}</td>
                                 <td class="px-4 py-3 font-semibold">{{ standing.formattedTotalTime }}</td>
+                                <td class="px-4 py-3 font-semibold text-slate-600">{{ standing.formattedGap }}</td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -73,14 +75,16 @@
                                             <th class="px-4 py-3">Rang</th>
                                             <th class="px-4 py-3">Équipe</th>
                                             <th class="px-4 py-3">Temps</th>
+                                            <th class="px-4 py-3">Écart</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-slate-200">
                                         {% for standing in stageDashboard.teamStandings %}
-                                            <tr>
+                                            <tr class="{{ standing.isCurrentUser ? 'border-l-4 border-emerald-600 bg-emerald-50/80' : '' }}">
                                                 <td class="px-4 py-3 font-extrabold">#{{ standing.rank }}</td>
                                                 <td class="px-4 py-3 font-bold">{{ standing.teamName }}</td>
                                                 <td class="px-4 py-3 font-semibold">{{ standing.formattedTotalTime }}</td>
+                                                <td class="px-4 py-3 font-semibold text-slate-600">{{ standing.formattedGap }}</td>
                                             </tr>
                                         {% endfor %}
                                     </tbody>
@@ -97,11 +101,12 @@
                                             <th class="px-4 py-3">Rang</th>
                                             <th class="px-4 py-3">Coureur</th>
                                             <th class="px-4 py-3">Temps</th>
+                                            <th class="px-4 py-3">Écart</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-slate-200">
                                         {% for standing in stageDashboard.riderStandings %}
-                                            <tr>
+                                            <tr class="{{ standing.isInCurrentUserTeam ? 'border-l-4 border-emerald-600 bg-emerald-50/80' : '' }}">
                                                 <td class="px-4 py-3 font-extrabold">#{{ standing.rank }}</td>
                                                 <td class="px-4 py-3">
                                                     <span class="block font-bold">
@@ -111,6 +116,7 @@
                                                     <span class="block text-xs text-slate-600">{{ standing.realTeam }}</span>
                                                 </td>
                                                 <td class="px-4 py-3 font-semibold">{{ standing.time }}</td>
+                                                <td class="px-4 py-3 font-semibold text-slate-600">{{ standing.gap }}</td>
                                             </tr>
                                         {% endfor %}
                                     </tbody>

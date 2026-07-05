@@ -51,20 +51,50 @@ final readonly class ImportTourDeFrance2026StageResultsHandler
             $matchedResults[] = [$importedResult, $rider];
         }
 
+        if ($importedResults === []) {
+            return new ImportStageResultsReport($stageNumber, 0, []);
+        }
+
         if ($unmatchedRiderNames !== []) {
             return new ImportStageResultsReport($stageNumber, 0, array_values(array_unique($unmatchedRiderNames)));
         }
 
         $this->results->deleteByStage($stage);
+        $matchedRiderIds = [];
 
         foreach ($matchedResults as [$importedResult, $rider]) {
             /** @var ImportedStageResult $importedResult */
             /** @var RiderRecord $rider */
-            $this->results->save(new StageRiderResultRecord($stage, $rider, $importedResult->timeInSeconds));
+            $matchedRiderIds[] = $rider->id();
+            $this->results->save(new StageRiderResultRecord(
+                $stage,
+                $rider,
+                $importedResult->timeInSeconds,
+                $importedResult->gapInSeconds,
+            ));
         }
 
+        $this->markRidersWithoutStageTimeAsAbandoned($matchedRiderIds);
         $this->entityManager->flush();
 
         return new ImportStageResultsReport($stageNumber, count($matchedResults), []);
+    }
+
+    /**
+     * @param list<int> $matchedRiderIds
+     */
+    private function markRidersWithoutStageTimeAsAbandoned(array $matchedRiderIds): void
+    {
+        foreach ($this->riders->findAllOrderedByName() as $rider) {
+            if (!$rider->isStillRacing()) {
+                continue;
+            }
+
+            if (in_array($rider->id(), $matchedRiderIds, true)) {
+                continue;
+            }
+
+            $rider->markAbandoned();
+        }
     }
 }

@@ -49,6 +49,11 @@ final class RiderRecordRepository extends ServiceEntityRepository implements Rid
                 $this->countryFlags->forNationality($rider->nationality()),
                 $rider->marketValueInEuros(),
                 $rider->specialty()?->value,
+                null,
+                'Aucun temps',
+                null,
+                '-',
+                false,
             ),
             $this->findAllOrderedByName(),
         );
@@ -63,6 +68,7 @@ final class RiderRecordRepository extends ServiceEntityRepository implements Rid
         }
 
         return new RiderDetails(
+            $rider->id(),
             $rider->slug(),
             $rider->name(),
             $rider->realTeam(),
@@ -70,6 +76,11 @@ final class RiderRecordRepository extends ServiceEntityRepository implements Rid
             $this->countryFlags->forNationality($rider->nationality()),
             $rider->marketValueInEuros(),
             $rider->specialty()?->value,
+            null,
+            'Aucun temps',
+            null,
+            '-',
+            false,
         );
     }
 

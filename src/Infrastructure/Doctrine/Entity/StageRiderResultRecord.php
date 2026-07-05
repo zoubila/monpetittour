@@ -26,6 +26,8 @@ class StageRiderResultRecord
         private RiderRecord $rider,
         #[ORM\Column]
         private int $timeInSeconds,
+        #[ORM\Column]
+        private int $gapInSeconds,
     ) {
     }
 
@@ -42,5 +44,10 @@ class StageRiderResultRecord
     public function timeInSeconds(): int
     {
         return $this->timeInSeconds;
+    }
+
+    public function gapInSeconds(): int
+    {
+        return $this->gapInSeconds;
     }
 }

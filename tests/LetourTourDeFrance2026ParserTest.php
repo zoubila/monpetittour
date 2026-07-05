@@ -72,7 +72,12 @@ final class LetourTourDeFrance2026ParserTest extends TestCase
         $results = (new LetourTourDeFrance2026Parser())->parseStageResults(<<<'HTML'
             <html>
                 <body>
-                    <table>
+                    <table class="rankingTable">
+                        <thead>
+                            <tr>
+                                <th>Rang</th><th>Coureur</th><th>Dossard</th><th>Équipe</th><th>Temps</th>
+                            </tr>
+                        </thead>
                         <tr class="rankingTables__row">
                             <td>1</td><td>&nbsp; J. VINGEGAARD <a class="rankingTables__row__profile--name" href="/fr/coureur/11/team-visma-lease-a-bike/jonas-vingegaard">J. VINGEGAARD</a></td><td>11</td><td>TEAM VISMA | LEASE A BIKE</td><td>00h 21' 47''</td><td>-</td>
                         </tr>
@@ -89,7 +94,45 @@ final class LetourTourDeFrance2026ParserTest extends TestCase
         self::assertSame('jonas vingegaard', $results[0]->riderName);
         self::assertSame('TEAM VISMA  LEASE A BIKE', $results[0]->realTeam);
         self::assertSame((21 * 60) + 47, $results[0]->timeInSeconds);
+        self::assertSame(0, $results[0]->gapInSeconds);
         self::assertSame('T. POGACAR', $results[1]->riderName);
         self::assertSame((21 * 60) + 59, $results[1]->timeInSeconds);
+        self::assertSame(12, $results[1]->gapInSeconds);
+    }
+
+    public function testItParsesStageIndividualResultsAjaxPathFromLetourRankingPage(): void
+    {
+        $path = (new LetourTourDeFrance2026Parser())->parseStageIndividualResultsPath(<<<'HTML'
+            <html>
+                <body>
+                    <span class="js-tabs-ranking" data-ajax-stack = {&quot;itg&quot;:&quot;\/fr\/ajax\/ranking\/2\/itg\/general\/none&quot;}>Classement général</span>
+                    <span class="js-tabs-ranking" data-ajax-stack = {&quot;ite&quot;:&quot;\/fr\/ajax\/ranking\/2\/ite\/stage\/none&quot;}>Classement de l&#039;étape</span>
+                </body>
+            </html>
+            HTML);
+
+        self::assertSame('https://www.letour.fr/fr/ajax/ranking/2/ite/stage/none', $path);
+    }
+
+    public function testItDoesNotParseTeamStageRankingAsRiderResults(): void
+    {
+        $results = (new LetourTourDeFrance2026Parser())->parseStageResults(<<<'HTML'
+            <html>
+                <body>
+                    <table class="rankingTable">
+                        <thead>
+                            <tr>
+                                <th>Rang</th><th>Équipe</th><th>Temps</th><th>Écart</th>
+                            </tr>
+                        </thead>
+                        <tr class="rankingTables__row">
+                            <td>1</td><td>TEAM VISMA | LEASE A BIKE</td><td>00h 21' 47''</td><td>-</td>
+                        </tr>
+                    </table>
+                </body>
+            </html>
+            HTML);
+
+        self::assertSame([], $results);
     }
 }

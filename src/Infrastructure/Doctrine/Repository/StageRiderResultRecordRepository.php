@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Doctrine\Repository;
 
+use App\Application\Repository\RiderResultReadRepositoryInterface;
 use App\Infrastructure\Doctrine\Entity\RiderRecord;
 use App\Infrastructure\Doctrine\Entity\StageRecord;
 use App\Infrastructure\Doctrine\Entity\StageRiderResultRecord;
@@ -13,7 +14,7 @@ use Doctrine\Persistence\ManagerRegistry;
 /**
  * @extends ServiceEntityRepository<StageRiderResultRecord>
  */
-final class StageRiderResultRecordRepository extends ServiceEntityRepository
+final class StageRiderResultRecordRepository extends ServiceEntityRepository implements RiderResultReadRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -69,6 +70,49 @@ final class StageRiderResultRecordRepository extends ServiceEntityRepository
         }
 
         return $times;
+    }
+
+    /**
+     * @param list<int> $riderIds
+     * @return array<int, int>
+     */
+    public function cumulativeTimesByRiderIds(array $riderIds): array
+    {
+        if ($riderIds === []) {
+            return [];
+        }
+
+        $rows = $this->createQueryBuilder('result')
+            ->select('IDENTITY(result.rider) AS riderId, SUM(result.timeInSeconds) AS totalTime')
+            ->andWhere('result.rider IN (:riderIds)')
+            ->setParameter('riderIds', $riderIds)
+            ->groupBy('result.rider')
+            ->getQuery()
+            ->getArrayResult();
+
+        $times = [];
+        foreach ($rows as $row) {
+            $times[(int) $row['riderId']] = (int) $row['totalTime'];
+        }
+
+        return $times;
+    }
+
+    public function bestCumulativeTimeInSeconds(): ?int
+    {
+        $rows = $this->createQueryBuilder('result')
+            ->select('SUM(result.timeInSeconds) AS totalTime')
+            ->groupBy('result.rider')
+            ->orderBy('totalTime', 'ASC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getArrayResult();
+
+        if ($rows === []) {
+            return null;
+        }
+
+        return (int) $rows[0]['totalTime'];
     }
 
     /**

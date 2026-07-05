@@ -46,8 +46,8 @@ final class ImportTourDeFrance2026StageResultsHandlerTest extends KernelTestCase
             public function stageResults(int $stageNumber): array
             {
                 return [
-                    new ImportedStageResult(1, 'T. POGACAR', 'UAE TEAM EMIRATES XRG', 16_335),
-                    new ImportedStageResult(2, 'J. VINGEGAARD', 'TEAM VISMA | LEASE A BIKE', 16_338),
+                    new ImportedStageResult(1, 'T. POGACAR', 'UAE TEAM EMIRATES XRG', 16_335, 0),
+                    new ImportedStageResult(2, 'J. VINGEGAARD', 'TEAM VISMA | LEASE A BIKE', 16_338, 3),
                 ];
             }
         };
@@ -64,8 +64,12 @@ final class ImportTourDeFrance2026StageResultsHandlerTest extends KernelTestCase
 
         $report = $handler(1);
         $stage = $stages->findOneByNumber(1);
+        $tadejPogacar = $riders->findOneBySlug('tadej-pogacar');
+        $seppKuss = $riders->findOneBySlug('sepp-kuss');
 
         self::assertInstanceOf(StageRecord::class, $stage);
+        self::assertNotNull($tadejPogacar);
+        self::assertNotNull($seppKuss);
         self::assertSame('Barcelona', $stage->startLocation());
         self::assertSame('Barcelona', $stage->finishLocation());
         self::assertSame(19.6, $stage->distanceInKilometers());
@@ -91,6 +95,12 @@ final class ImportTourDeFrance2026StageResultsHandlerTest extends KernelTestCase
             ),
         );
         self::assertSame(
+            1,
+            (int) $entityManager->getConnection()->fetchOne(
+                "SELECT COUNT(*) FROM information_schema.columns WHERE table_name = 'stage_rider_result' AND column_name = 'gap_in_seconds'",
+            ),
+        );
+        self::assertSame(
             0,
             (int) $entityManager->getConnection()->fetchOne(
                 "SELECT COUNT(*) FROM information_schema.columns WHERE table_name = 'stage_rider_result' AND column_name = 'stage_id'",
@@ -107,7 +117,11 @@ final class ImportTourDeFrance2026StageResultsHandlerTest extends KernelTestCase
         self::assertCount(2, $stageResults);
         self::assertSame('Tadej Pogacar', $stageResults[0]->rider()->name());
         self::assertSame(16_335, $stageResults[0]->timeInSeconds());
+        self::assertSame(0, $stageResults[0]->gapInSeconds());
         self::assertSame('Jonas Vingegaard', $stageResults[1]->rider()->name());
         self::assertSame(16_338, $stageResults[1]->timeInSeconds());
+        self::assertSame(3, $stageResults[1]->gapInSeconds());
+        self::assertTrue($tadejPogacar->isStillRacing());
+        self::assertFalse($seppKuss->isStillRacing());
     }
 }

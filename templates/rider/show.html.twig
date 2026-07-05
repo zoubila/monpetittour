@@ -28,6 +28,14 @@
                     <dt class="text-sm font-semibold text-slate-600">Spécialité</dt>
                     <dd class="mt-1 text-lg font-bold text-slate-950">{{ rider.specialty ?? 'Profil polyvalent' }}</dd>
                 </div>
+                <div>
+                    <dt class="text-sm font-semibold text-slate-600">Temps cumulé</dt>
+                    <dd class="mt-1 text-lg font-bold text-slate-950">{{ rider.formattedTotalTime }}</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-semibold text-slate-600">Écart cumulé</dt>
+                    <dd class="mt-1 text-lg font-bold text-slate-950">{{ rider.formattedTotalGap }}</dd>
+                </div>
             </dl>
         </article>
     </section>

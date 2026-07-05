@@ -43,7 +43,7 @@ final readonly class GetHomeDashboardHandler
             $this->stages->count([]),
             FantasyTeam::BUDGET_IN_EUROS,
             array_map(
-                fn (FantasyLeagueRecord $league): UserLeagueSummary => $this->leagueSummary($league),
+                fn (FantasyLeagueRecord $league): UserLeagueSummary => $this->leagueSummary($league, $user->username()),
                 $this->leagues->findByParticipant($user),
             ),
         );
@@ -60,7 +60,7 @@ final readonly class GetHomeDashboardHandler
         );
     }
 
-    private function leagueSummary(FantasyLeagueRecord $league): UserLeagueSummary
+    private function leagueSummary(FantasyLeagueRecord $league, string $currentUsername): UserLeagueSummary
     {
         $rows = [];
 
@@ -81,7 +81,9 @@ final readonly class GetHomeDashboardHandler
 
         $standings = [];
         $rank = 1;
+        $bestTime = $rows[0]['time'] ?? 0;
         foreach ($rows as $row) {
+            $gapInSeconds = $row['time'] - $bestTime;
             $standings[] = new StandingItem(
                 $rank,
                 $row['team']->name(),
@@ -89,6 +91,9 @@ final readonly class GetHomeDashboardHandler
                 $this->teamSummary($row['team'])->spentBudgetInEuros,
                 $row['time'],
                 $this->formatDuration($row['time']),
+                $gapInSeconds,
+                $this->formatGap($gapInSeconds),
+                $row['ownerUsername'] === $currentUsername,
             );
             ++$rank;
         }
@@ -103,8 +108,13 @@ final readonly class GetHomeDashboardHandler
     private function ridersForRecords(array $records): array
     {
         $riders = [];
+        $riderIds = array_map(static fn (RiderRecord $rider): int => $rider->id(), $records);
+        $times = $this->results->cumulativeTimesByRiderIds($riderIds);
+        $bestTime = $this->results->bestCumulativeTimeInSeconds();
 
         foreach ($records as $rider) {
+            $totalTime = $times[$rider->id()] ?? null;
+            $totalGap = $totalTime !== null && $bestTime !== null ? $totalTime - $bestTime : null;
             $riders[] = new RiderListItem(
                 $rider->id(),
                 $rider->slug(),
@@ -114,6 +124,11 @@ final readonly class GetHomeDashboardHandler
                 $this->countryFlags->forNationality($rider->nationality()),
                 $rider->marketValueInEuros(),
                 $rider->specialty()?->value,
+                $totalTime,
+                $totalTime !== null ? $this->formatDuration($totalTime) : 'Aucun temps',
+                $totalGap,
+                $totalGap !== null ? $this->formatGap($totalGap) : '-',
+                true,
             );
         }
 
@@ -128,5 +143,32 @@ final readonly class GetHomeDashboardHandler
         $seconds = $remainingSeconds % 60;
 
         return sprintf('%02dh %02dmin %02ds', $hours, $minutes, $seconds);
+    }
+
+    private function formatGap(int $seconds): string
+    {
+        if ($seconds <= 0) {
+            return '-';
+        }
+
+        return sprintf('+ %s', $this->formatShortDuration($seconds));
+    }
+
+    private function formatShortDuration(int $seconds): string
+    {
+        $hours = intdiv($seconds, 3_600);
+        $remainingSeconds = $seconds % 3_600;
+        $minutes = intdiv($remainingSeconds, 60);
+        $seconds = $remainingSeconds % 60;
+
+        if ($hours > 0) {
+            return sprintf('%02dh %02dmin %02ds', $hours, $minutes, $seconds);
+        }
+
+        if ($minutes > 0) {
+            return sprintf('%02dmin %02ds', $minutes, $seconds);
+        }
+
+        return sprintf('%02ds', $seconds);
     }
 }

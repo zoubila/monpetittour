@@ -26,6 +26,9 @@ final class FantasyHomeFlowTest extends WebTestCase
 
         $client->request('GET', '/mon-equipe/creation');
         self::assertResponseIsSuccessful();
+        self::assertSelectorExists('input[data-team-rider-search]');
+        self::assertSelectorExists('select[data-team-rider-sort]');
+        self::assertStringContainsString('data-team-rider-card', (string) $client->getResponse()->getContent());
         $client->request('POST', '/mon-equipe/creation', [
             'name' => 'Les Bordures',
             'riders' => $this->riderIds([
@@ -54,6 +57,10 @@ final class FantasyHomeFlowTest extends WebTestCase
         self::assertSelectorTextContains('body', 'Code');
         self::assertSelectorTextContains('body', 'Dashboard');
         self::assertSelectorTextContains('body', 'Les Bordures');
+        self::assertStringContainsString(
+            'border-l-4 border-emerald-600 bg-emerald-50/80',
+            (string) $client->getResponse()->getContent(),
+        );
     }
 
     public function testAnotherUserCanJoinALeagueWithSharedCodeUsingTheirCommonTeam(): void
@@ -108,8 +115,13 @@ final class FantasyHomeFlowTest extends WebTestCase
         self::assertSelectorTextContains('body', 'Voir la carte');
         self::assertSelectorTextContains('body', 'Classement users');
         self::assertSelectorTextContains('body', 'Classement riders');
+        self::assertSelectorTextContains('body', 'Écart');
         self::assertSelectorTextContains('body', 'Les Bordures');
         self::assertSelectorTextContains('body', 'Tadej Pogacar');
+        self::assertStringContainsString(
+            'border-l-4 border-emerald-600 bg-emerald-50/80',
+            (string) $client->getResponse()->getContent(),
+        );
     }
 
     private function register(KernelBrowser $client, string $username): void

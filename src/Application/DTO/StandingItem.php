@@ -13,6 +13,9 @@ final readonly class StandingItem
         public int $spentBudgetInEuros,
         public int $totalTimeInSeconds,
         public string $formattedTotalTime,
+        public int $gapInSeconds,
+        public string $formattedGap,
+        public bool $isCurrentUser,
     ) {
     }
 }

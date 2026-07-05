@@ -67,11 +67,19 @@ final readonly class StageFixtureLoader
                 continue;
             }
 
+            $stageTimes = [];
             foreach ($riders as $riderIndex => $rider) {
+                $stageTimes[$rider->id()] = $this->timeFor($stage, $rider, $stageIndex, $riderIndex);
+            }
+
+            $bestTime = min($stageTimes);
+            foreach ($riders as $rider) {
+                $time = $stageTimes[$rider->id()];
                 $this->results->save(new StageRiderResultRecord(
                     $stage,
                     $rider,
-                    $this->timeFor($stage, $rider, $stageIndex, $riderIndex),
+                    $time,
+                    $time - $bestTime,
                 ));
             }
         }

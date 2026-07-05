@@ -11,6 +11,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final readonly class LetourTourDeFrance2026StageDataSource implements TourDeFrance2026StageDataSourceInterface
 {
+    private const SITE_URL = 'https://www.letour.fr';
     private const BASE_URL = 'https://www.letour.fr/fr';
 
     public function __construct(
@@ -45,12 +46,26 @@ final readonly class LetourTourDeFrance2026StageDataSource implements TourDeFran
      */
     public function stageResults(int $stageNumber): array
     {
-        return $this->parser->parseStageResults($this->fetch(sprintf('/classements/etape-%d', $stageNumber)));
+        $rankingPage = $this->fetch(sprintf('/classements/etape-%d', $stageNumber));
+
+        if ($stageNumber === 1) {
+            return $this->parser->parseStageResults($rankingPage);
+        }
+
+        $stageIndividualResultsPath = $this->parser->parseStageIndividualResultsPath($rankingPage);
+        if ($stageIndividualResultsPath === null) {
+            throw new LetourScrapingUnavailable(sprintf(
+                'Letour individual stage ranking was not found for stage %d.',
+                $stageNumber,
+            ));
+        }
+
+        return $this->parser->parseStageResults($this->fetch($stageIndividualResultsPath));
     }
 
     private function fetch(string $path): string
     {
-        $response = $this->httpClient->request('GET', self::BASE_URL . $path, [
+        $response = $this->httpClient->request('GET', $this->url($path), [
             'headers' => [
                 'Accept' => 'text/html,application/xhtml+xml',
                 'User-Agent' => 'Mozilla/5.0 MonPetitTourBot/1.0',
@@ -65,5 +80,18 @@ final readonly class LetourTourDeFrance2026StageDataSource implements TourDeFran
         }
 
         return $html;
+    }
+
+    private function url(string $path): string
+    {
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return $path;
+        }
+
+        if (str_starts_with($path, '/fr/ajax/')) {
+            return self::SITE_URL . $path;
+        }
+
+        return self::BASE_URL . $path;
     }
 }
