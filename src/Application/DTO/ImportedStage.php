@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\DTO;
 
-final readonly class StageSummary
+final readonly class ImportedStage
 {
     public function __construct(
         public int $number,

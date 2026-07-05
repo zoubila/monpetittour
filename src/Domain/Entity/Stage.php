@@ -9,7 +9,7 @@ final readonly class Stage
     public function __construct(
         public int $number,
         public string $name,
-        public int $distanceInKilometers,
+        public float $distanceInKilometers,
     ) {
     }
 }

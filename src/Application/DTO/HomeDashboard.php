@@ -13,6 +13,7 @@ final readonly class HomeDashboard
         public ?UserTeamSummary $team,
         public int $riderCount,
         public int $stageCount,
+        public int $teamBudgetInEuros,
         public array $leagues,
     ) {
     }

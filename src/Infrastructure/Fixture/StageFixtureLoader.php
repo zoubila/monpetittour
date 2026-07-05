@@ -48,10 +48,10 @@ final readonly class StageFixtureLoader
     private function stageDefinitions(): array
     {
         return [
-            new StageRecord(1, 'Florence', 'Rimini', 206, 2_100),
-            new StageRecord(2, 'Cesenatico', 'Bologne', 199, 1_850),
-            new StageRecord(3, 'Plaisance', 'Turin', 231, 900),
-            new StageRecord(4, 'Turin', 'Valloire', 178, 3_600),
+            new StageRecord(1, 'Florence', 'Rimini', 206, 2_100, 'https://www.letour.fr/img/stage-1.png'),
+            new StageRecord(2, 'Cesenatico', 'Bologne', 199, 1_850, 'https://www.letour.fr/img/stage-2.png'),
+            new StageRecord(3, 'Plaisance', 'Turin', 231, 900, 'https://www.letour.fr/img/stage-3.png'),
+            new StageRecord(4, 'Turin', 'Valloire', 178, 3_600, 'https://www.letour.fr/img/stage-4.png'),
         ];
     }
 
@@ -79,7 +79,7 @@ final readonly class StageFixtureLoader
 
     private function timeFor(StageRecord $stage, RiderRecord $rider, int $stageIndex, int $riderIndex): int
     {
-        $baseTime = ($stage->distanceInKilometers() * 82) + (int) ($stage->positiveElevationInMeters() / 8);
+        $baseTime = ((int) round($stage->distanceInKilometers() * 82)) + (int) ($stage->positiveElevationInMeters() / 8);
         $nameFactor = strlen($rider->slug()) % 17;
 
         return $baseTime + ($riderIndex * 19) + ($stageIndex * 31) + ($nameFactor * 7);

@@ -18,7 +18,8 @@ trait DatabaseSchemaTrait
         $metadata = $entityManager->getMetadataFactory()->getAllMetadata();
         $schemaTool = new SchemaTool($entityManager);
 
-        $schemaTool->dropSchema($metadata);
+        $entityManager->getConnection()->executeStatement('DROP SCHEMA public CASCADE');
+        $entityManager->getConnection()->executeStatement('CREATE SCHEMA public');
         $schemaTool->createSchema($metadata);
 
         /** @var RiderFixtureLoader $fixtures */

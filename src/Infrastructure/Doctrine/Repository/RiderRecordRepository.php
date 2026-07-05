@@ -10,6 +10,7 @@ use App\Application\DTO\RiderListItem;
 use App\Application\Repository\RiderReadRepositoryInterface;
 use App\Application\Repository\RiderWriteRepositoryInterface;
 use App\Application\Service\CountryFlagResolver;
+use App\Application\Service\RiderNameNormalizer;
 use App\Domain\Entity\Rider;
 use App\Infrastructure\Doctrine\DoctrineFantasyCatalog;
 use App\Infrastructure\Doctrine\Entity\RiderRecord;
@@ -27,6 +28,7 @@ final class RiderRecordRepository extends ServiceEntityRepository implements Rid
     public function __construct(
         ManagerRegistry $registry,
         private readonly CountryFlagResolver $countryFlags,
+        private readonly RiderNameNormalizer $riderNameNormalizer,
     ) {
         parent::__construct($registry, RiderRecord::class);
         $this->entityManager = $this->getEntityManager();
@@ -87,6 +89,29 @@ final class RiderRecordRepository extends ServiceEntityRepository implements Rid
         return $this->findOneBy(['slug' => $slug]);
     }
 
+    public function findOneByImportedName(string $name): ?RiderRecord
+    {
+        $importedNames = $this->riderNameNormalizer->comparableNames($name);
+
+        foreach ($this->findAllOrderedByName() as $rider) {
+            if ($this->riderNameNormalizer->namesAreCompatible($name, $rider->name())) {
+                return $rider;
+            }
+
+            if ($this->riderNameNormalizer->abbreviatedNameMatches($name, $rider->name())) {
+                return $rider;
+            }
+
+            foreach ($this->riderNameNormalizer->comparableNames($rider->name()) as $knownName) {
+                if (in_array($knownName, $importedNames, true)) {
+                    return $rider;
+                }
+            }
+        }
+
+        return null;
+    }
+
     /**
      * @param list<int> $ids
      * @return list<RiderRecord>
@@ -131,20 +156,46 @@ final class RiderRecordRepository extends ServiceEntityRepository implements Rid
      */
     public function replaceAllFromImport(iterable $riders): void
     {
-        $this->createQueryBuilder('rider')
-            ->delete()
-            ->getQuery()
-            ->execute();
-
         foreach ($riders as $rider) {
-            $this->entityManager->persist(new RiderRecord(
-                $rider->slug,
-                $rider->name,
-                $rider->realTeam,
-                $rider->nationality,
-                $rider->marketValueInEuros,
-                $rider->specialty,
-            ));
+            $existingRider = $this->findOneBySlug($rider->slug);
+
+            if ($existingRider instanceof RiderRecord) {
+                $existingRider->updateFromImport(
+                    $rider->slug,
+                    $rider->name,
+                    $rider->realTeam,
+                    $rider->nationality,
+                    $rider->marketValueInEuros,
+                    $rider->specialty,
+                );
+
+                continue;
+            }
+
+            $matchingRider = $this->findOneByImportedName($rider->name);
+            if ($matchingRider instanceof RiderRecord) {
+                $matchingRider->updateFromImport(
+                    $rider->slug,
+                    $rider->name,
+                    $rider->realTeam,
+                    $rider->nationality,
+                    $rider->marketValueInEuros,
+                    $rider->specialty,
+                );
+
+                continue;
+            }
+
+            $this->entityManager->persist(
+                new RiderRecord(
+                    $rider->slug,
+                    $rider->name,
+                    $rider->realTeam,
+                    $rider->nationality,
+                    $rider->marketValueInEuros,
+                    $rider->specialty,
+                ),
+            );
         }
 
         $this->entityManager->flush();

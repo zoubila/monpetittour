@@ -9,36 +9,33 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: StageRecordRepository::class)]
 #[ORM\Table(name: 'stage')]
-#[ORM\UniqueConstraint(name: 'uniq_stage_number', columns: ['number'])]
 class StageRecord
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private int $id; // @phpstan-ignore property.onlyRead
-
     public function __construct(
-        #[ORM\Column]
-        private int $number,
+        #[ORM\Id]
+        #[ORM\Column(name: 'stage_number')]
+        private int $stageNumber,
         #[ORM\Column(length: 120)]
         private string $startLocation,
         #[ORM\Column(length: 120)]
         private string $finishLocation,
         #[ORM\Column]
-        private int $distanceInKilometers,
+        private float $distanceInKilometers,
         #[ORM\Column]
         private int $positiveElevationInMeters,
+        #[ORM\Column(length: 255, nullable: true)]
+        private ?string $mapPath = null,
     ) {
-    }
-
-    public function id(): int
-    {
-        return $this->id;
     }
 
     public function number(): int
     {
-        return $this->number;
+        return $this->stageNumber;
+    }
+
+    public function stageNumber(): int
+    {
+        return $this->stageNumber;
     }
 
     public function startLocation(): string
@@ -51,7 +48,7 @@ class StageRecord
         return $this->finishLocation;
     }
 
-    public function distanceInKilometers(): int
+    public function distanceInKilometers(): float
     {
         return $this->distanceInKilometers;
     }
@@ -59,5 +56,24 @@ class StageRecord
     public function positiveElevationInMeters(): int
     {
         return $this->positiveElevationInMeters;
+    }
+
+    public function mapPath(): ?string
+    {
+        return $this->mapPath;
+    }
+
+    public function updateFromImport(
+        string $startLocation,
+        string $finishLocation,
+        float $distanceInKilometers,
+        int $positiveElevationInMeters,
+        ?string $mapPath,
+    ): void {
+        $this->startLocation = $startLocation;
+        $this->finishLocation = $finishLocation;
+        $this->distanceInKilometers = $distanceInKilometers;
+        $this->positiveElevationInMeters = $positiveElevationInMeters;
+        $this->mapPath = $mapPath;
     }
 }

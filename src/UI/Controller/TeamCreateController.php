@@ -6,6 +6,7 @@ namespace App\UI\Controller;
 
 use App\Application\Command\CreateFantasyTeamCommand;
 use App\Application\Handler\CreateFantasyTeamHandler;
+use App\Domain\Entity\FantasyTeam;
 use App\Domain\Exception\FantasyTeamAlreadyExists;
 use App\Domain\Exception\InvalidFantasyTeam;
 use App\Infrastructure\Doctrine\Entity\ApplicationUser;
@@ -55,6 +56,7 @@ final class TeamCreateController extends AbstractController
         return $this->render('team/create.html.twig', [
             'form' => $form,
             'error' => $error,
+            'teamBudgetInEuros' => FantasyTeam::BUDGET_IN_EUROS,
         ]);
     }
 }

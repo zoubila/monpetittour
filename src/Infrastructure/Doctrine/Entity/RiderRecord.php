@@ -71,6 +71,22 @@ class RiderRecord
         return $this->specialty;
     }
 
+    public function updateFromImport(
+        string $slug,
+        string $name,
+        string $realTeam,
+        string $nationality,
+        int $marketValueInEuros,
+        ?RiderSpecialty $specialty,
+    ): void {
+        $this->slug = $slug;
+        $this->name = $name;
+        $this->realTeam = $realTeam;
+        $this->nationality = $nationality;
+        $this->marketValueInEuros = $marketValueInEuros;
+        $this->specialty = $specialty;
+    }
+
     public function isStillRacing(): bool
     {
         return $this->isStillRacing;

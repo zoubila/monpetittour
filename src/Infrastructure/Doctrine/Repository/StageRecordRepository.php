@@ -24,14 +24,14 @@ final class StageRecordRepository extends ServiceEntityRepository
     public function findAllOrderedByNumber(): array
     {
         return $this->createQueryBuilder('stage')
-            ->orderBy('stage.number', 'ASC')
+            ->orderBy('stage.stageNumber', 'ASC')
             ->getQuery()
             ->getResult();
     }
 
     public function findOneByNumber(int $number): ?StageRecord
     {
-        return $this->findOneBy(['number' => $number]);
+        return $this->findOneBy(['stageNumber' => $number]);
     }
 
     public function save(StageRecord $stage): void

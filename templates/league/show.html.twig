@@ -47,7 +47,20 @@
                             <p class="text-sm font-bold uppercase tracking-wide text-emerald-700">Étape {{ stageDashboard.stage.number }}</p>
                             <h2 class="mt-1 text-2xl font-extrabold tracking-tight text-slate-950">{{ stageDashboard.stage.startLocation }} - {{ stageDashboard.stage.finishLocation }}</h2>
                         </div>
-                        <p class="text-sm font-semibold text-slate-600">{{ stageDashboard.stage.distanceInKilometers }} km · {{ stageDashboard.stage.positiveElevationInMeters }} m D+</p>
+                        <div class="flex flex-wrap items-center gap-3 text-sm font-semibold text-slate-600">
+                            <span>{{ stageDashboard.stage.distanceInKilometers }} km</span>
+                            {% if stageDashboard.stage.mapPath %}
+                                <button
+                                    class="rounded-md border border-emerald-200 px-3 py-2 text-sm font-bold text-emerald-800 hover:border-emerald-600 hover:bg-emerald-50"
+                                    type="button"
+                                    data-stage-map-open
+                                    data-stage-map-src="{{ stageDashboard.stage.mapPath }}"
+                                    data-stage-map-title="Étape {{ stageDashboard.stage.number }} - {{ stageDashboard.stage.startLocation }} - {{ stageDashboard.stage.finishLocation }}"
+                                >
+                                    Voir la carte
+                                </button>
+                            {% endif %}
+                        </div>
                     </div>
 
                     <div class="mt-6 grid gap-6 lg:grid-cols-2">
@@ -109,4 +122,64 @@
             {% endfor %}
         </div>
     </section>
+
+    <div class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/70 p-4" data-stage-map-modal>
+        <div class="w-full max-w-5xl rounded-lg bg-white p-4 shadow-xl">
+            <div class="flex items-center justify-between gap-4">
+                <h2 class="text-lg font-extrabold text-slate-950" data-stage-map-title></h2>
+                <button
+                    class="rounded-md border border-slate-300 px-3 py-2 text-sm font-bold text-slate-800 hover:border-emerald-600 hover:text-emerald-700"
+                    type="button"
+                    data-stage-map-close
+                >
+                    Fermer
+                </button>
+            </div>
+            <img class="mt-4 max-h-[75vh] w-full rounded-md object-contain" src="" alt="" data-stage-map-image>
+        </div>
+    </div>
+
+    <script>
+        (() => {
+            const modal = document.querySelector('[data-stage-map-modal]');
+            if (!modal) {
+                return;
+            }
+
+            const image = modal.querySelector('[data-stage-map-image]');
+            const title = modal.querySelector('[data-stage-map-title]');
+            const closeButtons = modal.querySelectorAll('[data-stage-map-close]');
+
+            const close = () => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                image.setAttribute('src', '');
+                image.setAttribute('alt', '');
+            };
+
+            document.querySelectorAll('[data-stage-map-open]').forEach((button) => {
+                button.addEventListener('click', () => {
+                    const stageTitle = button.dataset.stageMapTitle || 'Carte de l’étape';
+
+                    title.textContent = stageTitle;
+                    image.setAttribute('src', button.dataset.stageMapSrc || '');
+                    image.setAttribute('alt', stageTitle);
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+                });
+            });
+
+            closeButtons.forEach((button) => button.addEventListener('click', close));
+            modal.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    close();
+                }
+            });
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && !modal.classList.contains('hidden')) {
+                    close();
+                }
+            });
+        })();
+    </script>
 {% endblock %}

@@ -36,3 +36,5 @@ services:
         alias: App\Infrastructure\Doctrine\Repository\FantasyLeagueRecordRepository
     App\Application\Port\RiderImportSourceInterface:
         alias: App\Infrastructure\Fixture\FixtureRiderImportSource
+    App\Application\Port\TourDeFrance2026StageDataSourceInterface:
+        alias: App\Infrastructure\External\Letour\LetourTourDeFrance2026StageDataSource

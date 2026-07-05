@@ -35,6 +35,16 @@ final class StageRiderResultRecordRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function deleteByStage(StageRecord $stage): void
+    {
+        $this->createQueryBuilder('result')
+            ->delete()
+            ->andWhere('result.stage = :stage')
+            ->setParameter('stage', $stage)
+            ->getQuery()
+            ->execute();
+    }
+
     /**
      * @param list<RiderRecord> $riders
      * @return array<int, int>

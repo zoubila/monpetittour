@@ -105,6 +105,7 @@ final class FantasyHomeFlowTest extends WebTestCase
         self::assertSelectorTextContains('body', 'Classement général');
         self::assertSelectorTextContains('body', 'Étape 1');
         self::assertSelectorTextContains('body', 'Florence - Rimini');
+        self::assertSelectorTextContains('body', 'Voir la carte');
         self::assertSelectorTextContains('body', 'Classement users');
         self::assertSelectorTextContains('body', 'Classement riders');
         self::assertSelectorTextContains('body', 'Les Bordures');

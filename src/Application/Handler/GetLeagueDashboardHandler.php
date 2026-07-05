@@ -114,6 +114,7 @@ final readonly class GetLeagueDashboardHandler
                 $stage->finishLocation(),
                 $stage->distanceInKilometers(),
                 $stage->positiveElevationInMeters(),
+                $stage->mapPath(),
             ),
             $this->rankTeamRows($teamRows),
             $this->riderStandings($stage),

@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: StageRiderResultRecordRepository::class)]
 #[ORM\Table(name: 'stage_rider_result')]
-#[ORM\UniqueConstraint(name: 'uniq_stage_rider_result', columns: ['stage_id', 'rider_id'])]
+#[ORM\UniqueConstraint(name: 'uniq_stage_rider_result', columns: ['stage_number', 'rider_id'])]
 class StageRiderResultRecord
 {
     #[ORM\Id]
@@ -19,7 +19,7 @@ class StageRiderResultRecord
 
     public function __construct(
         #[ORM\ManyToOne(targetEntity: StageRecord::class)]
-        #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+        #[ORM\JoinColumn(name: 'stage_number', referencedColumnName: 'stage_number', nullable: false, onDelete: 'CASCADE')]
         private StageRecord $stage,
         #[ORM\ManyToOne(targetEntity: RiderRecord::class)]
         #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]

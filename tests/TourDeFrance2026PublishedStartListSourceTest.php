@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests;
 
+use App\Domain\Enum\RiderSpecialty;
 use App\Infrastructure\External\TourDeFrance\TourDeFrance2026PublishedStartListSource;
 use PHPUnit\Framework\TestCase;
 
@@ -17,8 +18,10 @@ final class TourDeFrance2026PublishedStartListSourceTest extends TestCase
         self::assertSame('tadej-pogacar', $riders[152]->slug);
         self::assertSame('Tadej Pogacar', $riders[152]->name);
         self::assertSame('UAE Team Emirates-XRG', $riders[152]->realTeam);
-        self::assertSame(0, $riders[152]->marketValueInEuros);
-        self::assertNull($riders[152]->specialty);
+        self::assertSame(900_000, $riders[152]->marketValueInEuros);
+        self::assertSame(RiderSpecialty::Leader, $riders[152]->specialty);
         self::assertContains('jonas-vingegaard', array_map(static fn ($rider): string => $rider->slug, $riders));
+        self::assertCount(184, array_filter($riders, static fn ($rider): bool => $rider->marketValueInEuros > 0));
+        self::assertCount(184, array_filter($riders, static fn ($rider): bool => $rider->specialty instanceof RiderSpecialty));
     }
 }

@@ -13,6 +13,7 @@ use App\Application\Repository\FantasyLeagueRepositoryInterface;
 use App\Application\Repository\FantasyTeamRepositoryInterface;
 use App\Application\Repository\RiderReadRepositoryInterface;
 use App\Application\Service\CountryFlagResolver;
+use App\Domain\Entity\FantasyTeam;
 use App\Infrastructure\Doctrine\Entity\ApplicationUser;
 use App\Infrastructure\Doctrine\Entity\FantasyLeagueRecord;
 use App\Infrastructure\Doctrine\Entity\FantasyTeamRecord;
@@ -40,6 +41,7 @@ final readonly class GetHomeDashboardHandler
             $team instanceof FantasyTeamRecord ? $this->teamSummary($team) : null,
             $this->riderRecords->countRiders(),
             $this->stages->count([]),
+            FantasyTeam::BUDGET_IN_EUROS,
             array_map(
                 fn (FantasyLeagueRecord $league): UserLeagueSummary => $this->leagueSummary($league),
                 $this->leagues->findByParticipant($user),

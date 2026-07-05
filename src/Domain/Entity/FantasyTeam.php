@@ -8,7 +8,7 @@ use App\Domain\Exception\InvalidFantasyTeam;
 
 final readonly class FantasyTeam
 {
-    public const BUDGET_IN_EUROS = 500_000;
+    public const BUDGET_IN_EUROS = 1_200_000;
     private const EXPECTED_RIDER_COUNT = 8;
 
     /**
