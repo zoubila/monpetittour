@@ -4,7 +4,70 @@
         <meta charset="UTF-8">
         <title>{% block title %}Mon Petit Tour{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        <script>
+            window.tailwind = window.tailwind || {};
+            window.tailwind.config = { darkMode: 'class' };
+            (() => {
+                const storedTheme = localStorage.getItem('theme');
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const theme = storedTheme || (prefersDark ? 'dark' : 'light');
+
+                document.documentElement.classList.toggle('dark', theme === 'dark');
+            })();
+        </script>
         <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+            .dark body {
+                background: #020617;
+                color: #f8fafc;
+            }
+
+            .dark .bg-white,
+            .dark .bg-white\/95 {
+                background-color: #0f172a !important;
+            }
+
+            .dark .bg-slate-50 {
+                background-color: #020617 !important;
+            }
+
+            .dark .bg-slate-100 {
+                background-color: #1e293b !important;
+            }
+
+            .dark .bg-emerald-50,
+            .dark .bg-emerald-50\/80,
+            .dark .bg-emerald-50\/90 {
+                background-color: rgba(6, 78, 59, 0.45) !important;
+            }
+
+            .dark .text-slate-950,
+            .dark .text-slate-900,
+            .dark .text-slate-800 {
+                color: #f8fafc !important;
+            }
+
+            .dark .text-slate-700,
+            .dark .text-slate-600 {
+                color: #cbd5e1 !important;
+            }
+
+            .dark .border-slate-100,
+            .dark .border-slate-200,
+            .dark .border-slate-300 {
+                border-color: #334155 !important;
+            }
+
+            .dark input,
+            .dark select {
+                background-color: #020617;
+                color: #f8fafc;
+            }
+
+            input.peer:checked + span > span {
+                transform: translateX(1.25rem);
+            }
+        </style>
         {% block stylesheets %}
         {% endblock %}
 
@@ -27,13 +90,59 @@
                     <nav class="flex items-center gap-4 text-sm font-semibold text-slate-700">
                         <a class="hover:text-emerald-700" href="{{ path('home') }}">Accueil</a>
                         <a class="hover:text-emerald-700" href="{{ path('rider_index') }}">Coureurs</a>
+                        <button
+                            class="rounded-md border border-slate-300 px-3 py-2 hover:border-emerald-600 hover:text-emerald-700"
+                            type="button"
+                            data-theme-toggle
+                            aria-label="Changer de thème"
+                        >
+                            <span data-theme-toggle-label>Thème sombre</span>
+                        </button>
                         <a class="rounded-md border border-slate-300 px-3 py-2 hover:border-emerald-600 hover:text-emerald-700" href="{{ path('app_logout') }}">Déconnexion</a>
                     </nav>
                 </div>
             </header>
+        {% else %}
+            <div class="fixed right-4 top-4 z-50">
+                <button
+                    class="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-800 shadow-sm hover:border-emerald-600 hover:text-emerald-700"
+                    type="button"
+                    data-theme-toggle
+                    aria-label="Changer de thème"
+                >
+                    <span data-theme-toggle-label>Thème sombre</span>
+                </button>
+            </div>
         {% endif %}
         <main>
             {% block body %}{% endblock %}
         </main>
+        <script>
+            (() => {
+                const toggles = document.querySelectorAll('[data-theme-toggle]');
+                const labels = document.querySelectorAll('[data-theme-toggle-label]');
+
+                if (toggles.length === 0) {
+                    return;
+                }
+
+                const refreshLabels = () => {
+                    const isDark = document.documentElement.classList.contains('dark');
+                    labels.forEach((label) => {
+                        label.textContent = isDark ? 'Thème clair' : 'Thème sombre';
+                    });
+                };
+
+                toggles.forEach((toggle) => {
+                    toggle.addEventListener('click', () => {
+                        const isDark = document.documentElement.classList.toggle('dark');
+                        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                        refreshLabels();
+                    });
+                });
+
+                refreshLabels();
+            })();
+        </script>
     </body>
 </html>

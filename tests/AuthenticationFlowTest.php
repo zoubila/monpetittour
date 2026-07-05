@@ -26,6 +26,8 @@ final class AuthenticationFlowTest extends WebTestCase
         $this->recreateDatabaseSchema();
 
         $client->request('GET', '/inscription');
+        self::assertSelectorExists('button[data-theme-toggle]');
+
         $client->submitForm('Créer le compte', [
             'username' => 'manuel',
             'password' => 'secret',
@@ -36,6 +38,7 @@ final class AuthenticationFlowTest extends WebTestCase
         self::assertSelectorTextContains('h1', 'Ton équipe est commune à toutes tes ligues');
         self::assertSelectorTextContains('body', 'Mon équipe');
         self::assertSelectorTextContains('body', 'Mes ligues');
+        self::assertSelectorExists('button[data-theme-toggle]');
     }
 
     public function testRegisterShowsAnErrorWhenUsernameAlreadyExists(): void
