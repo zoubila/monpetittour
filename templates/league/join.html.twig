@@ -1,23 +1,23 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Rejoindre une ligue - Mon Petit Tour{% endblock %}
+{% block title %}{{ 'league.join.title'|trans }} - {{ 'app.name'|trans }}{% endblock %}
 
 {% block body %}
     <section class="mx-auto max-w-xl px-4 py-10">
-        <h1 class="text-3xl font-extrabold tracking-tight text-slate-950">Rejoindre une ligue</h1>
-        <p class="mt-2 text-sm text-slate-600">Entre le code partagé par un ami.</p>
+        <h1 class="text-3xl font-extrabold tracking-tight text-slate-950">{{ 'league.join.title'|trans }}</h1>
+        <p class="mt-2 text-sm text-slate-600">{{ 'league.join.subtitle'|trans }}</p>
 
         {% if error %}
-            <div class="mt-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-800">{{ error }}</div>
+            <div class="mt-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-800">{{ error|trans }}</div>
         {% endif %}
 
         {{ form_start(form, { attr: { class: 'mt-8 space-y-5' }, action: path('league_join') }) }}
             <div>
-                {{ form_label(form.code, 'Code de ligue', { label_attr: { class: 'block text-sm font-semibold text-slate-800' } }) }}
+                {{ form_label(form.code, 'league.form.code'|trans, { label_attr: { class: 'block text-sm font-semibold text-slate-800' } }) }}
                 {{ form_widget(form.code, { attr: { class: 'mt-2 w-full rounded-md border border-slate-300 px-3 py-2 uppercase outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100' } }) }}
                 {{ form_errors(form.code) }}
             </div>
-            <button class="rounded-md bg-slate-950 px-5 py-3 text-sm font-bold text-white hover:bg-slate-800" type="submit">Rejoindre</button>
+            <button class="rounded-md bg-slate-950 px-5 py-3 text-sm font-bold text-white hover:bg-slate-800" type="submit">{{ 'league.join.submit'|trans }}</button>
         {{ form_end(form) }}
     </section>
 {% endblock %}

@@ -78,7 +78,7 @@ final readonly class ListRidersHandler
             $rider->marketValueInEuros,
             $rider->specialty,
             $totalTime,
-            $totalTime !== null ? $this->formatDuration($totalTime) : 'Aucun temps',
+            $totalTime !== null ? $this->formatDuration($totalTime) : 'rider.no_time',
             $totalGap,
             $totalGap !== null ? $this->formatGap($totalGap) : '-',
             $isInCurrentUserTeam,

@@ -12,6 +12,6 @@ final class LogoutController
     #[Route('/deconnexion', name: 'app_logout', methods: ['GET'])]
     public function __invoke(): never
     {
-        throw new LogicException('Symfony intercepte cette route via le firewall logout.');
+        throw new LogicException('security.logout_intercepted');
     }
 }

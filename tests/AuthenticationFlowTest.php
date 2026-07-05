@@ -62,4 +62,17 @@ final class AuthenticationFlowTest extends WebTestCase
         self::assertSelectorTextContains('body', 'existe déjà');
         self::assertSelectorExists('input[value="manuel"]');
     }
+
+    public function testUserCanSwitchLanguage(): void
+    {
+        $client = self::createClient();
+
+        $client->request('GET', '/connexion');
+        $client->request('GET', '/langue/en', [], [], ['HTTP_REFERER' => 'http://localhost/connexion']);
+        $client->followRedirect();
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('h1', 'Log in');
+        self::assertSelectorTextContains('body', 'Create an account');
+    }
 }

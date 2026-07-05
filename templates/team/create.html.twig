@@ -1,50 +1,50 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Composer mon équipe - Mon Petit Tour{% endblock %}
+{% block title %}{{ 'team.create.title'|trans }} - {{ 'app.name'|trans }}{% endblock %}
 
 {% block body %}
     <section class="mx-auto max-w-6xl px-4 py-10">
-        <h1 class="text-3xl font-extrabold tracking-tight text-slate-950">Composer mon équipe</h1>
-        <p class="mt-2 text-sm font-semibold text-slate-600">Choisis exactement 8 coureurs pour un budget maximum de {{ teamBudgetInEuros|number_format(0, ',', ' ') }} €.</p>
+        <h1 class="text-3xl font-extrabold tracking-tight text-slate-950">{{ 'team.create.title'|trans }}</h1>
+        <p class="mt-2 text-sm font-semibold text-slate-600">{{ 'team.create.subtitle'|trans({'%budget%': teamBudgetInEuros|number_format(0, ',', ' ')}) }}</p>
 
         {% if error %}
-            <div class="mt-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-800">{{ error }}</div>
+            <div class="mt-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-800">{{ error|trans }}</div>
         {% endif %}
 
         {{ form_start(form, { attr: { class: 'mt-8 space-y-6', 'data-team-builder': '' }, action: path('team_create') }) }}
             <div>
-                {{ form_label(form.name, 'Nom de l’équipe', { label_attr: { class: 'block text-sm font-semibold text-slate-800' } }) }}
+                {{ form_label(form.name, 'team.form.name'|trans, { label_attr: { class: 'block text-sm font-semibold text-slate-800' } }) }}
                 {{ form_widget(form.name, { attr: { class: 'mt-2 w-full max-w-xl rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100' } }) }}
                 {{ form_errors(form.name) }}
             </div>
 
             <div class="grid gap-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm lg:grid-cols-[minmax(0,1fr)_240px] lg:items-end">
                 <div>
-                    <label class="block text-sm font-bold text-slate-800" for="team-rider-search">Recherche</label>
+                    <label class="block text-sm font-bold text-slate-800" for="team-rider-search">{{ 'filters.search'|trans }}</label>
                     <input
                         id="team-rider-search"
                         class="mt-2 w-full rounded-md border border-slate-300 px-3 py-2 text-sm font-semibold outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100"
                         type="search"
-                        placeholder="Nom, pays, équipe..."
+                        placeholder="{{ 'filters.search_placeholder'|trans }}"
                         data-team-rider-search
                     >
                 </div>
                 <div>
-                    <label class="block text-sm font-bold text-slate-800" for="team-rider-sort">Trier par</label>
+                    <label class="block text-sm font-bold text-slate-800" for="team-rider-sort">{{ 'filters.sort_by'|trans }}</label>
                     <select
                         id="team-rider-sort"
                         class="mt-2 w-full rounded-md border border-slate-300 px-3 py-2 text-sm font-semibold outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100"
                         data-team-rider-sort
                     >
-                        <option value="name-asc">Alphabet A-Z</option>
-                        <option value="name-desc">Alphabet Z-A</option>
-                        <option value="price-asc">Prix croissant</option>
-                        <option value="price-desc">Prix décroissant</option>
-                        <option value="country-asc">Pays A-Z</option>
-                        <option value="team-asc">Équipe A-Z</option>
+                        <option value="name-asc">{{ 'filters.sort.name_asc'|trans }}</option>
+                        <option value="name-desc">{{ 'filters.sort.name_desc'|trans }}</option>
+                        <option value="price-asc">{{ 'filters.sort.price_asc'|trans }}</option>
+                        <option value="price-desc">{{ 'filters.sort.price_desc'|trans }}</option>
+                        <option value="country-asc">{{ 'filters.sort.country_asc'|trans }}</option>
+                        <option value="team-asc">{{ 'filters.sort.team_asc'|trans }}</option>
                     </select>
                 </div>
-                <p class="text-sm font-semibold text-slate-600 lg:col-span-2"><span data-filtered-rider-count>{{ form.riders|length }}</span> coureurs affichés</p>
+                <p class="text-sm font-semibold text-slate-600 lg:col-span-2">{{ 'rider.visible_count_html'|trans({'%count%': '<span data-filtered-rider-count>' ~ form.riders|length ~ '</span>'})|raw }}</p>
             </div>
 
             <div class="grid gap-4 md:grid-cols-2" data-team-riders-list>
@@ -62,11 +62,11 @@
                         {{ form_widget(riderField, { attr: { class: 'sr-only', 'data-rider-value': rider.marketValueInEuros } }) }}
                         <span class="min-w-0 flex-1">
                             <span class="block font-extrabold text-slate-950">{{ riderField.vars.label }}</span>
-                            <span class="mt-1 block text-sm text-slate-600">{{ rider.realTeam }} · {{ rider.nationality }} · {{ rider.specialty ? rider.specialty.value : 'polyvalent' }}</span>
+                            <span class="mt-1 block text-sm text-slate-600">{{ rider.realTeam }} · {{ rider.nationality }} · {{ rider.specialty ? rider.specialty.value : 'rider.specialty.polyvalent'|trans }}</span>
                         </span>
                         <span class="flex shrink-0 flex-col items-end gap-2">
                             <span class="text-sm font-extrabold text-emerald-800">{{ rider.marketValueInEuros|number_format(0, ',', ' ') }} €</span>
-                            <span class="hidden rounded-md bg-emerald-700 px-2 py-1 text-xs font-extrabold text-white" data-selected-rider-badge>Sélectionné</span>
+                            <span class="hidden rounded-md bg-emerald-700 px-2 py-1 text-xs font-extrabold text-white" data-selected-rider-badge>{{ 'team.create.selected'|trans }}</span>
                         </span>
                     </label>
                 {% endfor %}
@@ -75,13 +75,13 @@
 
             <div class="sticky bottom-0 -mx-4 border-t border-slate-200 bg-white/95 px-4 py-4 backdrop-blur">
                 <div class="mb-3 flex flex-col gap-2 text-sm font-semibold text-slate-700 sm:flex-row sm:items-center sm:justify-between">
-                    <p><span data-selected-count>0</span>/8 coureurs sélectionnés</p>
+                    <p>{{ 'team.create.selected_count_html'|trans({'%count%': '<span data-selected-count>0</span>'})|raw }}</p>
                     <p><span data-selected-budget>0 €</span> / {{ teamBudgetInEuros|number_format(0, ',', ' ') }} €</p>
                 </div>
                 <p class="mb-3 text-sm font-semibold text-red-700" data-team-builder-message></p>
                 <div class="flex gap-3">
-                    <button class="rounded-md bg-emerald-700 px-5 py-3 text-sm font-bold text-white hover:bg-emerald-800 disabled:cursor-not-allowed disabled:bg-slate-300" type="submit" data-team-builder-submit>Enregistrer l’équipe</button>
-                    <a class="rounded-md border border-slate-300 px-5 py-3 text-sm font-bold text-slate-800 hover:border-emerald-600 hover:text-emerald-700" href="{{ path('home') }}">Annuler</a>
+                    <button class="rounded-md bg-emerald-700 px-5 py-3 text-sm font-bold text-white hover:bg-emerald-800 disabled:cursor-not-allowed disabled:bg-slate-300" type="submit" data-team-builder-submit>{{ 'team.create.submit'|trans }}</button>
+                    <a class="rounded-md border border-slate-300 px-5 py-3 text-sm font-bold text-slate-800 hover:border-emerald-600 hover:text-emerald-700" href="{{ path('home') }}">{{ 'common.cancel'|trans }}</a>
                 </div>
             </div>
         {{ form_end(form) }}
@@ -104,7 +104,7 @@
             const selectedBudget = form.querySelector('[data-selected-budget]');
             const message = form.querySelector('[data-team-builder-message]');
             const submit = form.querySelector('[data-team-builder-submit]');
-            const formatter = new Intl.NumberFormat('fr-FR');
+            const formatter = new Intl.NumberFormat('{{ app.request.locale }}');
             const teamBudgetInEuros = {{ teamBudgetInEuros|json_encode|raw }};
 
             const normalize = (value) => value
@@ -114,7 +114,7 @@
                 .toLowerCase()
                 .trim();
 
-            const compareText = (left, right) => left.localeCompare(right, 'fr', { sensitivity: 'base' });
+            const compareText = (left, right) => left.localeCompare(right, '{{ app.request.locale }}', { sensitivity: 'base' });
 
             const sortCards = () => {
                 const sortedCards = [...cards].sort((left, right) => {
@@ -179,12 +179,12 @@
                 submit.disabled = !(countIsValid && budgetIsValid);
 
                 if (!countIsValid) {
-                    message.textContent = 'Sélectionne exactement 8 coureurs pour enregistrer ton équipe.';
+                    message.textContent = '{{ 'team.create.select_exactly_eight'|trans|e('js') }}';
                     return;
                 }
 
                 if (!budgetIsValid) {
-                    message.textContent = `Le budget maximum de ${formatter.format(teamBudgetInEuros)} € est dépassé.`;
+                    message.textContent = '{{ 'team.create.budget_exceeded'|trans({'%budget%': '__BUDGET__'})|e('js') }}'.replace('__BUDGET__', formatter.format(teamBudgetInEuros));
                     return;
                 }
 

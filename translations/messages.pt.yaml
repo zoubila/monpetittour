@@ -1,0 +1,162 @@
+app:
+  name: 'Mon Petit Tour'
+nav:
+  home: 'Início'
+  home_aria: 'Voltar ao início'
+  back_home: 'Voltar ao início'
+  riders: 'Ciclistas'
+  official_classification: 'Classificação oficial'
+  petit_toureur: 'Classificação Petit Toureur'
+  logout: 'Sair'
+theme:
+  toggle: 'Alterar tema'
+  dark: 'Tema escuro'
+  light: 'Tema claro'
+language:
+  fr: 'Francês'
+  en: 'Inglês'
+  es: 'Espanhol'
+  pt: 'Português'
+auth:
+  username: 'Usuário'
+  password: 'Senha'
+  login:
+    title: 'Entrar'
+    link: 'Entrar'
+    submit: 'Entrar'
+    invalid_credentials: 'Credenciais inválidas.'
+    no_account: 'Ainda não tem conta?'
+  register:
+    title: 'Criar uma conta'
+    link: 'Criar uma conta'
+    submit: 'Criar conta'
+    has_account: 'Já está registado?'
+home:
+  title: 'Início'
+  eyebrow: '🚴 Fantasy entre amigos'
+  tagline: '1 500 000 € • 8 ciclistas • 21 etapas • Uma missão: vencer os seus amigos e conquistar a camisola amarela da sua liga.'
+  metrics:
+    completed_stages: 'Etapas concluídas'
+    team_time: 'Tempo da equipa'
+    petit_toureur_rank: 'Classificação Petit Toureur'
+    no_team: 'Sem equipa'
+  team:
+    eyebrow: 'Equipa Fantasy'
+    title: 'A minha equipa'
+    budget_used: '%budget% € usados'
+    compose: 'Montar'
+    empty: 'Ainda não montou a sua equipa de 8 ciclistas.'
+  leagues:
+    eyebrow: 'Ligas'
+    title: 'As minhas ligas'
+    create: 'Criar'
+    join: 'Entrar'
+    empty: 'Ainda não participa em nenhuma liga.'
+    no_team: 'Ainda não há equipa montada nesta liga.'
+league:
+  eyebrow: 'Liga'
+  code: 'Código %code%'
+  dashboard: 'Dashboard'
+  general_standings: 'Classificação geral'
+  stage_team_standings: 'Classificação dos utilizadores'
+  stage_rider_standings: 'Classificação dos ciclistas'
+  back_to_dashboard: 'Voltar ao dashboard'
+  compositions:
+    title: 'Composições das equipas'
+    eyebrow: 'Composições'
+    link: 'Composições'
+    manager: 'Manager %manager%'
+    budget: '%budget% €'
+    empty: 'Ainda não há equipa montada nesta liga.'
+  create:
+    title: 'Criar uma liga'
+    subtitle: 'Será gerado automaticamente um código de partilha.'
+    submit: 'Criar liga'
+  join:
+    title: 'Entrar numa liga'
+    subtitle: 'Introduza o código partilhado por um amigo.'
+    submit: 'Entrar'
+  form:
+    name: 'Nome da liga'
+    code: 'Código da liga'
+team:
+  create:
+    title: 'Montar a minha equipa'
+    subtitle: 'Escolha exatamente 8 ciclistas com um orçamento máximo de %budget% €.'
+    selected: 'Selecionado'
+    selected_count_html: '%count%/8 ciclistas selecionados'
+    submit: 'Guardar equipa'
+    select_exactly_eight: 'Selecione exatamente 8 ciclistas para guardar a sua equipa.'
+    budget_exceeded: 'O orçamento máximo de %budget% € foi excedido.'
+  form:
+    name: 'Nome da equipa'
+rider:
+  index:
+    title: 'Ciclistas disponíveis'
+    eyebrow: 'Startlist'
+  visible_count_html: '%count% ciclistas apresentados'
+  my_riders: 'Os meus ciclistas'
+  total_time: 'Total %time%'
+  empty_search: 'Nenhum ciclista corresponde à sua pesquisa.'
+  no_time: 'Sem tempo'
+  back_to_list: 'Voltar aos ciclistas'
+  nationality: 'Nacionalidade'
+  market_value: 'Valor de mercado'
+  specialty_label: 'Especialidade'
+  cumulative_gap: 'Diferença acumulada'
+  specialty:
+    polyvalent: 'Perfil polivalente'
+  status:
+    racing: 'Em prova'
+    abandoned: 'Abandono'
+classification:
+  fantasy:
+    title: 'Classificação Petit Toureur'
+    eyebrow: 'Classificação global'
+    count: '%count% equipas classificadas'
+    empty: 'Ainda não há equipas montadas.'
+  official:
+    title: 'Classificação geral oficial dos ciclistas'
+    eyebrow: 'Classificação oficial'
+    count: '%count% ciclistas classificados'
+    empty: 'Ainda não foi importado nenhum resultado.'
+stage:
+  number: 'Etapa %number%'
+  view_map: 'Ver mapa'
+  map_title: 'Etapa %number% - %start% - %finish%'
+  map_fallback_title: 'Mapa da etapa'
+modal:
+  close: 'Fechar'
+table:
+  rank: 'Posição'
+  rider: 'Ciclista'
+  team: 'Equipa'
+  manager: 'Manager'
+  budget: 'Orçamento'
+  cumulative_time: 'Tempo acumulado'
+  total_time: 'Tempo total'
+  time: 'Tempo'
+  gap: 'Diferença'
+  status: 'Estado'
+filters:
+  search: 'Pesquisar'
+  search_placeholder: 'Nome, país, equipa...'
+  sort_by: 'Ordenar por'
+  sort:
+    name_asc: 'Alfabética A-Z'
+    name_desc: 'Alfabética Z-A'
+    price_asc: 'Preço crescente'
+    price_desc: 'Preço decrescente'
+    country_asc: 'País A-Z'
+    team_asc: 'Equipa A-Z'
+common:
+  cancel: 'Cancelar'
+error:
+  league_not_found: 'Nenhuma liga corresponde a este código.'
+  team_already_exists: 'Já montou a sua equipa fantasy.'
+  team_must_contain_eight_riders: 'Uma equipa fantasy deve ter exatamente 8 ciclistas.'
+  team_budget_exceeded: 'O orçamento fantasy de 1 500 000 € foi excedido.'
+  username_already_exists: 'O usuário "%username%" já existe.'
+  rider_not_found: 'Ciclista não encontrado.'
+security:
+  logout_intercepted: 'O Symfony intercepta esta rota através da firewall de logout.'

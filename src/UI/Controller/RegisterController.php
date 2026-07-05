@@ -25,6 +25,7 @@ final class RegisterController extends AbstractController
         FormFactoryInterface $forms,
     ): Response {
         $error = null;
+        $errorParameters = [];
         $form = $forms->createNamed('', RegisterFormType::class);
         $form->handleRequest($request);
 
@@ -40,12 +41,14 @@ final class RegisterController extends AbstractController
                 return $security->login($user, 'form_login', 'main');
             } catch (UsernameAlreadyExists $exception) {
                 $error = $exception->getMessage();
+                $errorParameters = ['%username%' => $exception->username];
             }
         }
 
         return $this->render('auth/register.html.twig', [
             'form' => $form,
             'error' => $error,
+            'errorParameters' => $errorParameters,
         ]);
     }
 }

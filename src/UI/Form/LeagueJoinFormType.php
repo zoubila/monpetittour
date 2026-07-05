@@ -14,7 +14,7 @@ final class LeagueJoinFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('code', TextType::class, [
-            'constraints' => [new NotBlank(message: 'Le code de ligue est obligatoire.')],
+            'constraints' => [new NotBlank(message: 'validation.league_code_required')],
         ]);
     }
 }

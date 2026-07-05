@@ -14,7 +14,7 @@ final class LeagueCreateFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('name', TextType::class, [
-            'constraints' => [new NotBlank(message: 'Le nom de la ligue est obligatoire.')],
+            'constraints' => [new NotBlank(message: 'validation.league_name_required')],
         ]);
     }
 }

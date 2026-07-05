@@ -10,6 +10,6 @@ final class FantasyTeamAlreadyExists extends DomainException
 {
     public function __construct()
     {
-        parent::__construct('Tu as déjà composé ton équipe fantasy.');
+        parent::__construct('error.team_already_exists');
     }
 }

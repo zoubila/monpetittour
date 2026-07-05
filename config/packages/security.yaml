@@ -37,6 +37,7 @@ security:
     access_control:
         - { path: ^/connexion$, roles: PUBLIC_ACCESS }
         - { path: ^/inscription$, roles: PUBLIC_ACCESS }
+        - { path: ^/langue/(fr|en|es|pt)$, roles: PUBLIC_ACCESS }
         - { path: ^/, roles: ROLE_USER }
 
 when@test:

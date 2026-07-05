@@ -23,7 +23,7 @@ final class RiderShowController extends AbstractController
         );
 
         if ($rider === null) {
-            throw $this->createNotFoundException('Coureur introuvable.');
+            throw $this->createNotFoundException('error.rider_not_found');
         }
 
         return $this->render('rider/show.html.twig', [

@@ -17,10 +17,10 @@ final class LoginFormType extends AbstractType
     {
         $builder
             ->add('username', TextType::class, [
-                'constraints' => [new NotBlank()],
+                'constraints' => [new NotBlank(message: 'validation.username_required')],
             ])
             ->add('password', PasswordType::class, [
-                'constraints' => [new NotBlank()],
+                'constraints' => [new NotBlank(message: 'validation.password_required')],
             ]);
     }
 

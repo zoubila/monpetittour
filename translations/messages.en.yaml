@@ -1,0 +1,162 @@
+app:
+  name: 'Mon Petit Tour'
+nav:
+  home: 'Home'
+  home_aria: 'Back home'
+  back_home: 'Back home'
+  riders: 'Riders'
+  official_classification: 'Official standings'
+  petit_toureur: 'Petit Toureur ranking'
+  logout: 'Log out'
+theme:
+  toggle: 'Switch theme'
+  dark: 'Dark theme'
+  light: 'Light theme'
+language:
+  fr: 'French'
+  en: 'English'
+  es: 'Spanish'
+  pt: 'Portuguese'
+auth:
+  username: 'Username'
+  password: 'Password'
+  login:
+    title: 'Log in'
+    link: 'Log in'
+    submit: 'Log in'
+    invalid_credentials: 'Invalid credentials.'
+    no_account: 'No account yet?'
+  register:
+    title: 'Create an account'
+    link: 'Create an account'
+    submit: 'Create account'
+    has_account: 'Already registered?'
+home:
+  title: 'Home'
+  eyebrow: '🚴 Fantasy with friends'
+  tagline: 'EUR 1,500,000 • 8 riders • 21 stages • One mission: beat your friends and win your league’s yellow jersey.'
+  metrics:
+    completed_stages: 'Completed stages'
+    team_time: 'Team time'
+    petit_toureur_rank: 'Petit Toureur ranking'
+    no_team: 'No team'
+  team:
+    eyebrow: 'Fantasy Team'
+    title: 'My team'
+    budget_used: 'EUR %budget% used'
+    compose: 'Build'
+    empty: 'You have not built your 8-rider team yet.'
+  leagues:
+    eyebrow: 'Leagues'
+    title: 'My leagues'
+    create: 'Create'
+    join: 'Join'
+    empty: 'You are not participating in any league yet.'
+    no_team: 'No team has been built in this league yet.'
+league:
+  eyebrow: 'League'
+  code: 'Code %code%'
+  dashboard: 'Dashboard'
+  general_standings: 'General standings'
+  stage_team_standings: 'User standings'
+  stage_rider_standings: 'Rider standings'
+  back_to_dashboard: 'Back to dashboard'
+  compositions:
+    title: 'Team compositions'
+    eyebrow: 'Compositions'
+    link: 'Compositions'
+    manager: 'Manager %manager%'
+    budget: 'EUR %budget%'
+    empty: 'No team has been built in this league yet.'
+  create:
+    title: 'Create a league'
+    subtitle: 'A sharing code will be generated automatically.'
+    submit: 'Create league'
+  join:
+    title: 'Join a league'
+    subtitle: 'Enter the code shared by a friend.'
+    submit: 'Join'
+  form:
+    name: 'League name'
+    code: 'League code'
+team:
+  create:
+    title: 'Build my team'
+    subtitle: 'Choose exactly 8 riders within a maximum budget of EUR %budget%.'
+    selected: 'Selected'
+    selected_count_html: '%count%/8 riders selected'
+    submit: 'Save team'
+    select_exactly_eight: 'Select exactly 8 riders to save your team.'
+    budget_exceeded: 'The maximum budget of EUR %budget% is exceeded.'
+  form:
+    name: 'Team name'
+rider:
+  index:
+    title: 'Available riders'
+    eyebrow: 'Startlist'
+  visible_count_html: '%count% riders shown'
+  my_riders: 'My riders'
+  total_time: 'Total %time%'
+  empty_search: 'No rider matches your search.'
+  no_time: 'No time'
+  back_to_list: 'Back to riders'
+  nationality: 'Nationality'
+  market_value: 'Market value'
+  specialty_label: 'Specialty'
+  cumulative_gap: 'Cumulative gap'
+  specialty:
+    polyvalent: 'All-round profile'
+  status:
+    racing: 'Still racing'
+    abandoned: 'Withdrawn'
+classification:
+  fantasy:
+    title: 'Petit Toureur ranking'
+    eyebrow: 'Global ranking'
+    count: '%count% ranked teams'
+    empty: 'No team has been built yet.'
+  official:
+    title: 'Official rider general classification'
+    eyebrow: 'Official standings'
+    count: '%count% ranked riders'
+    empty: 'No result has been imported yet.'
+stage:
+  number: 'Stage %number%'
+  view_map: 'View map'
+  map_title: 'Stage %number% - %start% - %finish%'
+  map_fallback_title: 'Stage map'
+modal:
+  close: 'Close'
+table:
+  rank: 'Rank'
+  rider: 'Rider'
+  team: 'Team'
+  manager: 'Manager'
+  budget: 'Budget'
+  cumulative_time: 'Cumulative time'
+  total_time: 'Total time'
+  time: 'Time'
+  gap: 'Gap'
+  status: 'Status'
+filters:
+  search: 'Search'
+  search_placeholder: 'Name, country, team...'
+  sort_by: 'Sort by'
+  sort:
+    name_asc: 'Alphabet A-Z'
+    name_desc: 'Alphabet Z-A'
+    price_asc: 'Lowest price'
+    price_desc: 'Highest price'
+    country_asc: 'Country A-Z'
+    team_asc: 'Team A-Z'
+common:
+  cancel: 'Cancel'
+error:
+  league_not_found: 'No league matches this code.'
+  team_already_exists: 'You have already built your fantasy team.'
+  team_must_contain_eight_riders: 'A fantasy team must contain exactly 8 riders.'
+  team_budget_exceeded: 'The fantasy budget of EUR 1,500,000 is exceeded.'
+  username_already_exists: 'The username "%username%" already exists.'
+  rider_not_found: 'Rider not found.'
+security:
+  logout_intercepted: 'Symfony intercepts this route through the logout firewall.'

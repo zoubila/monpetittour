@@ -16,10 +16,10 @@ final class RegisterFormType extends AbstractType
     {
         $builder
             ->add('username', TextType::class, [
-                'constraints' => [new NotBlank(message: 'Le nom d’utilisateur est obligatoire.')],
+                'constraints' => [new NotBlank(message: 'validation.username_required')],
             ])
             ->add('password', PasswordType::class, [
-                'constraints' => [new NotBlank(message: 'Le mot de passe est obligatoire.')],
+                'constraints' => [new NotBlank(message: 'validation.password_required')],
             ]);
     }
 }

@@ -1,0 +1,7 @@
+validation:
+  team_name_required: 'El nombre del equipo es obligatorio.'
+  team_must_contain_eight_riders: 'Un equipo fantasy debe tener exactamente 8 corredores.'
+  league_name_required: 'El nombre de la liga es obligatorio.'
+  league_code_required: 'El código de la liga es obligatorio.'
+  username_required: 'El nombre de usuario es obligatorio.'
+  password_required: 'La contraseña es obligatoria.'

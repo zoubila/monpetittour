@@ -40,7 +40,7 @@ final readonly class GetHomeDashboardHandler
             $team instanceof FantasyTeamRecord ? $this->teamSummary($team) : null,
             $this->results->countStagesWithResults(),
             $this->stages->count([]),
-            $team instanceof FantasyTeamRecord ? $this->formatDuration($this->teamTotalTimeInSeconds($team)) : 'Aucune équipe',
+            $team instanceof FantasyTeamRecord ? $this->formatDuration($this->teamTotalTimeInSeconds($team)) : 'home.metrics.no_team',
             $globalStanding?->rank,
             array_map(
                 fn (FantasyLeagueRecord $league): UserLeagueSummary => $this->leagueSummary($league, $user->username()),
@@ -143,7 +143,7 @@ final readonly class GetHomeDashboardHandler
                 $rider->marketValueInEuros(),
                 $rider->specialty()?->value,
                 $totalTime,
-                $totalTime !== null ? $this->formatDuration($totalTime) : 'Aucun temps',
+                $totalTime !== null ? $this->formatDuration($totalTime) : 'rider.no_time',
                 $totalGap,
                 $totalGap !== null ? $this->formatGap($totalGap) : '-',
                 true,

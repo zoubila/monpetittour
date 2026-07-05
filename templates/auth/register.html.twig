@@ -1,36 +1,36 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Inscription - Mon Petit Tour{% endblock %}
+{% block title %}{{ 'auth.register.title'|trans }} - {{ 'app.name'|trans }}{% endblock %}
 
 {% block body %}
     <section class="flex min-h-screen items-center justify-center px-4 py-10">
         <div class="w-full max-w-md rounded-lg border border-slate-200 bg-white/95 p-8 shadow-sm backdrop-blur">
-            <img class="mx-auto h-44 w-auto" src="{{ asset('UI/logo.png') }}" alt="Mon Petit Tour">
-            <h1 class="mt-2 text-center text-1xl font-extrabold tracking-tight text-slate-950">Créer un compte</h1>
+            <img class="mx-auto h-44 w-auto" src="{{ asset('UI/logo.png') }}" alt="{{ 'app.name'|trans }}">
+            <h1 class="mt-2 text-center text-1xl font-extrabold tracking-tight text-slate-950">{{ 'auth.register.title'|trans }}</h1>
 
             {% if error %}
                 <div class="mt-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-800">
-                    {{ error }}
+                    {{ error|trans(errorParameters|default({})) }}
                 </div>
             {% endif %}
 
             {{ form_start(form, { attr: { class: 'mt-8 space-y-5' }, action: path('app_register') }) }}
                 <div>
-                    {{ form_label(form.username, 'Username', { label_attr: { class: 'block text-sm font-semibold text-slate-800' } }) }}
+                    {{ form_label(form.username, 'auth.username'|trans, { label_attr: { class: 'block text-sm font-semibold text-slate-800' } }) }}
                     {{ form_widget(form.username, { attr: { class: 'mt-2 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100', autocomplete: 'username' } }) }}
                     {{ form_errors(form.username) }}
                 </div>
                 <div>
-                    {{ form_label(form.password, 'Password', { label_attr: { class: 'block text-sm font-semibold text-slate-800' } }) }}
+                    {{ form_label(form.password, 'auth.password'|trans, { label_attr: { class: 'block text-sm font-semibold text-slate-800' } }) }}
                     {{ form_widget(form.password, { attr: { class: 'mt-2 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100', autocomplete: 'new-password' } }) }}
                     {{ form_errors(form.password) }}
                 </div>
-                <button class="w-full rounded-md bg-emerald-700 px-4 py-3 text-sm font-bold text-white hover:bg-emerald-800" type="submit">Créer le compte</button>
+                <button class="w-full rounded-md bg-emerald-700 px-4 py-3 text-sm font-bold text-white hover:bg-emerald-800" type="submit">{{ 'auth.register.submit'|trans }}</button>
             {{ form_end(form) }}
 
             <p class="mt-6 text-center text-sm text-slate-600">
-                Déjà inscrit ?
-                <a class="font-bold text-emerald-700 hover:text-emerald-900" href="{{ path('app_login') }}">Se connecter</a>
+                {{ 'auth.register.has_account'|trans }}
+                <a class="font-bold text-emerald-700 hover:text-emerald-900" href="{{ path('app_login') }}">{{ 'auth.login.link'|trans }}</a>
             </p>
         </div>
     </section>

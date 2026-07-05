@@ -8,8 +8,8 @@ use DomainException;
 
 final class UsernameAlreadyExists extends DomainException
 {
-    public function __construct(string $username)
+    public function __construct(public readonly string $username)
     {
-        parent::__construct(sprintf('Le nom d’utilisateur "%s" existe déjà.', $username));
+        parent::__construct('error.username_already_exists');
     }
 }

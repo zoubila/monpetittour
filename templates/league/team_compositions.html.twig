@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'league.compositions.title'|trans }} - {{ league.leagueName }} - {{ 'app.name'|trans }}{% endblock %}
+
+{% block body %}
+    <section class="mx-auto max-w-6xl px-4 py-10">
+        <div class="flex flex-wrap items-center gap-3">
+            <a class="text-sm font-bold text-emerald-700 hover:text-emerald-900" href="{{ path('league_show', { id: leagueId }) }}">{{ 'league.back_to_dashboard'|trans }}</a>
+            <a class="text-sm font-bold text-emerald-700 hover:text-emerald-900" href="{{ path('home') }}">{{ 'nav.back_home'|trans }}</a>
+        </div>
+
+        <div class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+                <p class="text-sm font-bold uppercase tracking-wide text-emerald-700">{{ 'league.compositions.eyebrow'|trans }}</p>
+                <h1 class="mt-2 text-3xl font-extrabold tracking-tight text-slate-950">{{ league.leagueName }}</h1>
+            </div>
+            <p class="rounded-md bg-emerald-50 px-3 py-2 text-sm font-extrabold text-emerald-800">{{ 'league.code'|trans({'%code%': league.leagueCode}) }}</p>
+        </div>
+
+        {% if league.teams is empty %}
+            <p class="mt-8 rounded-lg border border-slate-200 bg-white p-5 text-sm font-semibold text-slate-600">{{ 'league.compositions.empty'|trans }}</p>
+        {% endif %}
+
+        <div class="mt-8 grid gap-6 lg:grid-cols-2">
+            {% for team in league.teams %}
+                <article class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm {{ team.isCurrentUser ? 'border-l-4 border-emerald-600 bg-emerald-50/80' : '' }}">
+                    <div class="flex items-start justify-between gap-4">
+                        <div>
+                            <h2 class="text-2xl font-extrabold tracking-tight text-slate-950">{{ team.teamName }}</h2>
+                            <p class="mt-1 text-sm font-semibold text-slate-600">{{ 'league.compositions.manager'|trans({'%manager%': team.ownerUsername}) }}</p>
+                        </div>
+                        <p class="rounded-md bg-emerald-50 px-3 py-1 text-sm font-extrabold text-emerald-800">{{ 'league.compositions.budget'|trans({'%budget%': team.spentBudgetInEuros|number_format(0, ',', ' ')}) }}</p>
+                    </div>
+
+                    <div class="mt-5 overflow-hidden rounded-lg border border-slate-200">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-100 text-xs font-bold uppercase tracking-wide text-slate-600">
+                                <tr>
+                                    <th class="px-4 py-3">{{ 'table.rider'|trans }}</th>
+                                    <th class="px-4 py-3">{{ 'rider.specialty_label'|trans }}</th>
+                                    <th class="px-4 py-3">{{ 'table.budget'|trans }}</th>
+                                    <th class="px-4 py-3">{{ 'table.status'|trans }}</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200">
+                                {% for rider in team.riders %}
+                                    <tr>
+                                        <td class="px-4 py-3">
+                                            <span class="block font-bold text-slate-950">
+                                                {% if rider.nationalityFlag %}<span aria-hidden="true">{{ rider.nationalityFlag }}</span>{% endif %}
+                                                {{ rider.name }}
+                                            </span>
+                                            <span class="block text-xs text-slate-600">{{ rider.realTeam }} · {{ rider.nationality }}</span>
+                                        </td>
+                                        <td class="px-4 py-3 font-semibold text-slate-700">{{ rider.specialty ?? 'rider.specialty.polyvalent'|trans }}</td>
+                                        <td class="px-4 py-3 font-semibold text-slate-700">{{ rider.marketValueInEuros|number_format(0, ',', ' ') }} €</td>
+                                        <td class="px-4 py-3">
+                                            {% if rider.isStillRacing %}
+                                                <span class="rounded-md bg-emerald-50 px-2 py-1 text-xs font-extrabold uppercase text-emerald-800">{{ 'rider.status.racing'|trans }}</span>
+                                            {% else %}
+                                                <span class="rounded-md bg-rose-100 px-2 py-1 text-xs font-extrabold uppercase text-rose-800">{{ 'rider.status.abandoned'|trans }}</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    </section>
+{% endblock %}

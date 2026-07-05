@@ -25,7 +25,7 @@ final class FantasyTeamFormType extends AbstractType
     {
         $builder
             ->add('name', TextType::class, [
-                'constraints' => [new NotBlank(message: 'Le nom de l’équipe est obligatoire.')],
+                'constraints' => [new NotBlank(message: 'validation.team_name_required')],
             ])
             ->add('riders', EntityType::class, [
                 'class' => RiderRecord::class,
@@ -43,7 +43,7 @@ final class FantasyTeamFormType extends AbstractType
                     new Count(
                         min: 8,
                         max: 8,
-                        exactMessage: 'Une équipe fantasy doit contenir exactement 8 coureurs.',
+                        exactMessage: 'validation.team_must_contain_eight_riders',
                     ),
                 ],
             ]);

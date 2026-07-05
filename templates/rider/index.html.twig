@@ -1,43 +1,43 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Coureurs - Mon Petit Tour{% endblock %}
+{% block title %}{{ 'rider.index.title'|trans }} - {{ 'app.name'|trans }}{% endblock %}
 
 {% block body %}
     <section class="mx-auto max-w-6xl px-4 py-10">
         <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
-                <p class="text-sm font-bold uppercase tracking-wide text-emerald-700">Startlist fixtures</p>
-                <h1 class="mt-2 text-3xl font-extrabold tracking-tight text-slate-950">Coureurs disponibles</h1>
+                <p class="text-sm font-bold uppercase tracking-wide text-emerald-700">{{ 'rider.index.eyebrow'|trans }}</p>
+                <h1 class="mt-2 text-3xl font-extrabold tracking-tight text-slate-950">{{ 'rider.index.title'|trans }}</h1>
             </div>
             <div class="flex flex-col gap-3 sm:items-end">
-                <p class="text-sm font-semibold text-slate-600"><span data-rider-count>{{ riders|length }}</span> coureurs affichés</p>
+                <p class="text-sm font-semibold text-slate-600">{{ 'rider.visible_count_html'|trans({'%count%': '<span data-rider-count>' ~ riders|length ~ '</span>'})|raw }}</p>
             </div>
         </div>
 
         <div class="mt-8 grid gap-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm lg:grid-cols-[minmax(0,1fr)_240px_auto] lg:items-end">
             <div>
-                <label class="block text-sm font-bold text-slate-800" for="rider-search">Recherche</label>
+                <label class="block text-sm font-bold text-slate-800" for="rider-search">{{ 'filters.search'|trans }}</label>
                 <input
                     id="rider-search"
                     class="mt-2 w-full rounded-md border border-slate-300 px-3 py-2 text-sm font-semibold outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100"
                     type="search"
-                    placeholder="Nom, pays, équipe..."
+                    placeholder="{{ 'filters.search_placeholder'|trans }}"
                     data-rider-search
                 >
             </div>
             <div>
-                <label class="block text-sm font-bold text-slate-800" for="rider-sort">Trier par</label>
+                <label class="block text-sm font-bold text-slate-800" for="rider-sort">{{ 'filters.sort_by'|trans }}</label>
                 <select
                     id="rider-sort"
                     class="mt-2 w-full rounded-md border border-slate-300 px-3 py-2 text-sm font-semibold outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100"
                     data-rider-sort
                 >
-                    <option value="name-asc">Alphabet A-Z</option>
-                    <option value="name-desc">Alphabet Z-A</option>
-                    <option value="price-asc">Prix croissant</option>
-                    <option value="price-desc">Prix décroissant</option>
-                    <option value="country-asc">Pays A-Z</option>
-                    <option value="team-asc">Équipe A-Z</option>
+                    <option value="name-asc">{{ 'filters.sort.name_asc'|trans }}</option>
+                    <option value="name-desc">{{ 'filters.sort.name_desc'|trans }}</option>
+                    <option value="price-asc">{{ 'filters.sort.price_asc'|trans }}</option>
+                    <option value="price-desc">{{ 'filters.sort.price_desc'|trans }}</option>
+                    <option value="country-asc">{{ 'filters.sort.country_asc'|trans }}</option>
+                    <option value="team-asc">{{ 'filters.sort.team_asc'|trans }}</option>
                 </select>
             </div>
             <label class="inline-flex cursor-pointer items-center gap-3 text-sm font-bold text-slate-700 lg:pb-2">
@@ -45,7 +45,7 @@
                 <span class="h-6 w-11 rounded-full bg-slate-300 p-1 transition peer-checked:bg-emerald-700">
                     <span class="block h-4 w-4 rounded-full bg-white transition peer-checked:translate-x-5"></span>
                 </span>
-                Mes coureurs
+                {{ 'rider.my_riders'|trans }}
             </label>
         </div>
 
@@ -73,19 +73,19 @@
                         <div class="flex shrink-0 flex-col items-end gap-2">
                             <p class="rounded-md bg-emerald-50 px-3 py-1 text-sm font-extrabold text-emerald-800">{{ rider.marketValueInEuros|number_format(0, ',', ' ') }} €</p>
                             {% if not rider.isStillRacing %}
-                                <p class="rounded bg-rose-100 px-2 py-0.5 text-[11px] font-extrabold uppercase text-rose-800">Abandon</p>
+                                <p class="rounded bg-rose-100 px-2 py-0.5 text-[11px] font-extrabold uppercase text-rose-800">{{ 'rider.status.abandoned'|trans }}</p>
                             {% endif %}
                         </div>
                     </div>
                     <div class="mt-4 grid gap-2 text-sm font-semibold text-slate-700 sm:grid-cols-3">
-                        <p>{{ rider.specialty ?? 'Profil polyvalent' }}</p>
-                        <p>Total {{ rider.formattedTotalTime }}</p>
+                        <p>{{ rider.specialty ?? 'rider.specialty.polyvalent'|trans }}</p>
+                        <p>{{ 'rider.total_time'|trans({'%time%': rider.formattedTotalTime|trans}) }}</p>
                         <p>{{ rider.formattedTotalGap }}</p>
                     </div>
                 </a>
             {% endfor %}
         </div>
-        <p class="mt-8 hidden rounded-md border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-600" data-rider-empty-state>Aucun coureur ne correspond à ta recherche.</p>
+        <p class="mt-8 hidden rounded-md border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-600" data-rider-empty-state>{{ 'rider.empty_search'|trans }}</p>
     </section>
 
     <script>
@@ -109,7 +109,7 @@
                 .toLowerCase()
                 .trim();
 
-            const compareText = (left, right) => left.localeCompare(right, 'fr', { sensitivity: 'base' });
+            const compareText = (left, right) => left.localeCompare(right, '{{ app.request.locale }}', { sensitivity: 'base' });
 
             const sortCards = () => {
                 const sortedCards = [...cards].sort((left, right) => {

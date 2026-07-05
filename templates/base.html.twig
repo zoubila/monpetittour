@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="{{ app.request.locale }}">
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Mon Petit Tour{% endblock %}</title>
+        <title>{% block title %}{{ 'app.name'|trans }}{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
         <script>
             window.tailwind = window.tailwind || {};
@@ -100,33 +100,65 @@
         {% if app.user %}
             <header class="border-b border-slate-200 bg-white/95 backdrop-blur">
                 <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-                    <a class="flex items-center" href="{{ path('home') }}" aria-label="Retour accueil">
-                        <img class="h-14 w-auto" src="{{ asset('UI/logo.png') }}" alt="Mon Petit Tour">
+                    <a class="flex items-center" href="{{ path('home') }}" aria-label="{{ 'nav.home_aria'|trans }}">
+                        <img class="h-14 w-auto" src="{{ asset('UI/logo.png') }}" alt="{{ 'app.name'|trans }}">
                     </a>
                     <nav class="flex items-center gap-4 text-sm font-semibold text-slate-700">
-                        <a class="hover:text-emerald-700" href="{{ path('home') }}">Accueil</a>
-                        <a class="hover:text-emerald-700" href="{{ path('rider_index') }}">Coureurs</a>
-                        <a class="hover:text-emerald-700" href="{{ path('official_rider_classification') }}">Classement officiel</a>
-                        <a class="hover:text-emerald-700" href="{{ path('global_fantasy_team_classification') }}">Classement petit toureur</a>
-                        <label class="inline-flex cursor-pointer items-center gap-2" title="Changer de thème">
-                            <input class="sr-only" type="checkbox" data-theme-toggle aria-label="Changer de thème">
+                        <a class="hover:text-emerald-700" href="{{ path('home') }}">{{ 'nav.home'|trans }}</a>
+                        <a class="hover:text-emerald-700" href="{{ path('rider_index') }}">{{ 'nav.riders'|trans }}</a>
+                        <a class="hover:text-emerald-700" href="{{ path('official_rider_classification') }}">{{ 'nav.official_classification'|trans }}</a>
+                        <a class="hover:text-emerald-700" href="{{ path('global_fantasy_team_classification') }}">{{ 'nav.petit_toureur'|trans }}</a>
+                        <div class="flex items-center gap-2">
+                            {% set locales = {
+                                fr: '🇫🇷',
+                                en: '🇬🇧',
+                                es: '🇪🇸',
+                                pt: '🇵🇹'
+                            } %}
+                            {% for locale, flag in locales %}
+                                <a
+                                    class="rounded px-1.5 py-1 text-base hover:bg-emerald-50 {{ app.request.locale == locale ? 'bg-emerald-50 ring-1 ring-emerald-600' : '' }}"
+                                    href="{{ path('locale_switch', { locale: locale }) }}"
+                                    title="{{ ('language.' ~ locale)|trans }}"
+                                    aria-label="{{ ('language.' ~ locale)|trans }}"
+                                >{{ flag }}</a>
+                            {% endfor %}
+                        </div>
+                        <label class="inline-flex cursor-pointer items-center gap-2" title="{{ 'theme.toggle'|trans }}">
+                            <input class="sr-only" type="checkbox" data-theme-toggle aria-label="{{ 'theme.toggle'|trans }}">
                             <span class="h-6 w-11 rounded-full bg-slate-300 p-1 transition">
                                 <span class="block h-4 w-4 rounded-full bg-white transition"></span>
                             </span>
-                            <span data-theme-toggle-label>Thème sombre</span>
+                            <span data-theme-toggle-label>{{ 'theme.dark'|trans }}</span>
                         </label>
-                        <a class="rounded-md border border-slate-300 px-3 py-2 hover:border-emerald-600 hover:text-emerald-700" href="{{ path('app_logout') }}">Déconnexion</a>
+                        <a class="rounded-md border border-slate-300 px-3 py-2 hover:border-emerald-600 hover:text-emerald-700" href="{{ path('app_logout') }}">{{ 'nav.logout'|trans }}</a>
                     </nav>
                 </div>
             </header>
         {% else %}
-            <div class="fixed right-4 top-4 z-50">
-                <label class="inline-flex cursor-pointer items-center gap-2 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-800 shadow-sm hover:border-emerald-600 hover:text-emerald-700" title="Changer de thème">
-                    <input class="sr-only" type="checkbox" data-theme-toggle aria-label="Changer de thème">
+            <div class="fixed right-4 top-4 z-50 flex items-center gap-2">
+                {% set locales = {
+                    fr: '🇫🇷',
+                    en: '🇬🇧',
+                    es: '🇪🇸',
+                    pt: '🇵🇹'
+                } %}
+                <div class="flex rounded-md border border-slate-300 bg-white px-2 py-1 shadow-sm">
+                    {% for locale, flag in locales %}
+                        <a
+                            class="rounded px-1.5 py-1 text-base hover:bg-emerald-50 {{ app.request.locale == locale ? 'bg-emerald-50 ring-1 ring-emerald-600' : '' }}"
+                            href="{{ path('locale_switch', { locale: locale }) }}"
+                            title="{{ ('language.' ~ locale)|trans }}"
+                            aria-label="{{ ('language.' ~ locale)|trans }}"
+                        >{{ flag }}</a>
+                    {% endfor %}
+                </div>
+                <label class="inline-flex cursor-pointer items-center gap-2 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-800 shadow-sm hover:border-emerald-600 hover:text-emerald-700" title="{{ 'theme.toggle'|trans }}">
+                    <input class="sr-only" type="checkbox" data-theme-toggle aria-label="{{ 'theme.toggle'|trans }}">
                     <span class="h-6 w-11 rounded-full bg-slate-300 p-1 transition">
                         <span class="block h-4 w-4 rounded-full bg-white transition"></span>
                     </span>
-                    <span data-theme-toggle-label>Thème sombre</span>
+                    <span data-theme-toggle-label>{{ 'theme.dark'|trans }}</span>
                 </label>
             </div>
         {% endif %}
@@ -148,7 +180,7 @@
                         toggle.checked = isDark;
                     });
                     labels.forEach((label) => {
-                        label.textContent = isDark ? 'Thème clair' : 'Thème sombre';
+                        label.textContent = isDark ? '{{ 'theme.light'|trans|e('js') }}' : '{{ 'theme.dark'|trans|e('js') }}';
                     });
                 };
 

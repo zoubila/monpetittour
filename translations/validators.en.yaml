@@ -1,0 +1,7 @@
+validation:
+  team_name_required: 'The team name is required.'
+  team_must_contain_eight_riders: 'A fantasy team must contain exactly 8 riders.'
+  league_name_required: 'The league name is required.'
+  league_code_required: 'The league code is required.'
+  username_required: 'The username is required.'
+  password_required: 'The password is required.'

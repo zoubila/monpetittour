@@ -1,0 +1,162 @@
+app:
+  name: 'Mon Petit Tour'
+nav:
+  home: 'Accueil'
+  home_aria: 'Retour accueil'
+  back_home: 'Retour accueil'
+  riders: 'Coureurs'
+  official_classification: 'Classement officiel'
+  petit_toureur: 'Classement petit toureur'
+  logout: 'Déconnexion'
+theme:
+  toggle: 'Changer de thème'
+  dark: 'Thème sombre'
+  light: 'Thème clair'
+language:
+  fr: 'Français'
+  en: 'Anglais'
+  es: 'Espagnol'
+  pt: 'Portugais'
+auth:
+  username: 'Username'
+  password: 'Password'
+  login:
+    title: 'Connexion'
+    link: 'Se connecter'
+    submit: 'Se connecter'
+    invalid_credentials: 'Identifiants invalides.'
+    no_account: 'Pas encore de compte ?'
+  register:
+    title: 'Créer un compte'
+    link: 'Créer un compte'
+    submit: 'Créer le compte'
+    has_account: 'Déjà inscrit ?'
+home:
+  title: 'Accueil'
+  eyebrow: '🚴 Fantasy entre amis'
+  tagline: '1 500 000 € • 8 coureurs • 21 étapes • Une seule mission : battre vos amis et décrocher le maillot jaune de votre ligue.'
+  metrics:
+    completed_stages: 'Étapes courues'
+    team_time: 'Temps équipe'
+    petit_toureur_rank: 'Classement petit toureur'
+    no_team: 'Aucune équipe'
+  team:
+    eyebrow: 'Équipe Fantasy'
+    title: 'Mon équipe'
+    budget_used: '%budget% € utilisés'
+    compose: 'Composer'
+    empty: 'Tu n’as pas encore composé ton équipe de 8 coureurs.'
+  leagues:
+    eyebrow: 'Ligues'
+    title: 'Mes ligues'
+    create: 'Créer'
+    join: 'Rejoindre'
+    empty: 'Tu ne participes encore à aucune ligue.'
+    no_team: 'Aucune équipe composée dans cette ligue pour l’instant.'
+league:
+  eyebrow: 'Ligue'
+  code: 'Code %code%'
+  dashboard: 'Dashboard'
+  general_standings: 'Classement général'
+  stage_team_standings: 'Classement users'
+  stage_rider_standings: 'Classement riders'
+  back_to_dashboard: 'Retour dashboard'
+  compositions:
+    title: 'Compositions des équipes'
+    eyebrow: 'Compositions'
+    link: 'Compositions'
+    manager: 'Manager %manager%'
+    budget: '%budget% €'
+    empty: 'Aucune équipe composée dans cette ligue pour le moment.'
+  create:
+    title: 'Créer une ligue'
+    subtitle: 'Un code de partage sera généré automatiquement.'
+    submit: 'Créer la ligue'
+  join:
+    title: 'Rejoindre une ligue'
+    subtitle: 'Entre le code partagé par un ami.'
+    submit: 'Rejoindre'
+  form:
+    name: 'Nom de la ligue'
+    code: 'Code de ligue'
+team:
+  create:
+    title: 'Composer mon équipe'
+    subtitle: 'Choisis exactement 8 coureurs pour un budget maximum de %budget% €.'
+    selected: 'Sélectionné'
+    selected_count_html: '%count%/8 coureurs sélectionnés'
+    submit: 'Enregistrer l’équipe'
+    select_exactly_eight: 'Sélectionne exactement 8 coureurs pour enregistrer ton équipe.'
+    budget_exceeded: 'Le budget maximum de %budget% € est dépassé.'
+  form:
+    name: 'Nom de l’équipe'
+rider:
+  index:
+    title: 'Coureurs disponibles'
+    eyebrow: 'Startlist'
+  visible_count_html: '%count% coureurs affichés'
+  my_riders: 'Mes coureurs'
+  total_time: 'Total %time%'
+  empty_search: 'Aucun coureur ne correspond à ta recherche.'
+  no_time: 'Aucun temps'
+  back_to_list: 'Retour aux coureurs'
+  nationality: 'Nationalité'
+  market_value: 'Valeur marchande'
+  specialty_label: 'Spécialité'
+  cumulative_gap: 'Écart cumulé'
+  specialty:
+    polyvalent: 'Profil polyvalent'
+  status:
+    racing: 'En course'
+    abandoned: 'Abandon'
+classification:
+  fantasy:
+    title: 'Classement petit toureur'
+    eyebrow: 'Classement global'
+    count: '%count% équipes classées'
+    empty: 'Aucune équipe composée pour le moment.'
+  official:
+    title: 'Classement général des coureurs'
+    eyebrow: 'Classement officiel'
+    count: '%count% coureurs classés'
+    empty: 'Aucun résultat importé pour le moment.'
+stage:
+  number: 'Étape %number%'
+  view_map: 'Voir la carte'
+  map_title: 'Étape %number% - %start% - %finish%'
+  map_fallback_title: 'Carte de l’étape'
+modal:
+  close: 'Fermer'
+table:
+  rank: 'Rang'
+  rider: 'Coureur'
+  team: 'Équipe'
+  manager: 'Manager'
+  budget: 'Budget'
+  cumulative_time: 'Temps cumulé'
+  total_time: 'Temps total'
+  time: 'Temps'
+  gap: 'Écart'
+  status: 'Statut'
+filters:
+  search: 'Recherche'
+  search_placeholder: 'Nom, pays, équipe...'
+  sort_by: 'Trier par'
+  sort:
+    name_asc: 'Alphabet A-Z'
+    name_desc: 'Alphabet Z-A'
+    price_asc: 'Prix croissant'
+    price_desc: 'Prix décroissant'
+    country_asc: 'Pays A-Z'
+    team_asc: 'Équipe A-Z'
+common:
+  cancel: 'Annuler'
+error:
+  league_not_found: 'Aucune ligue ne correspond à ce code.'
+  team_already_exists: 'Tu as déjà composé ton équipe fantasy.'
+  team_must_contain_eight_riders: 'Une équipe fantasy doit contenir exactement 8 coureurs.'
+  team_budget_exceeded: 'Le budget fantasy de 1 500 000 € est dépassé.'
+  username_already_exists: 'Le nom d’utilisateur "%username%" existe déjà.'
+  rider_not_found: 'Coureur introuvable.'
+security:
+  logout_intercepted: 'Symfony intercepte cette route via le firewall logout.'

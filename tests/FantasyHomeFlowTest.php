@@ -122,6 +122,7 @@ final class FantasyHomeFlowTest extends WebTestCase
         self::assertSelectorTextContains('body', 'Classement users');
         self::assertSelectorTextContains('body', 'Classement riders');
         self::assertSelectorTextContains('body', 'Mes coureurs');
+        self::assertSelectorTextContains('body', 'Compositions');
         self::assertSelectorTextContains('body', 'Écart');
         self::assertSelectorTextContains('body', 'Les Bordures');
         self::assertSelectorTextContains('body', 'Tadej Pogacar');
@@ -131,6 +132,41 @@ final class FantasyHomeFlowTest extends WebTestCase
             'border-l-4 border-emerald-600 bg-emerald-50/80',
             (string) $client->getResponse()->getContent(),
         );
+    }
+
+    public function testLeagueTeamCompositionsDisplaysEveryParticipantTeam(): void
+    {
+        $client = self::createClient();
+        $this->recreateDatabaseSchema();
+        $this->register($client, 'manuel');
+        $this->createTeam($client, 'Les Bordures');
+        $client->request('GET', '/ligues/creation');
+        $client->submitForm('Créer la ligue', ['name' => 'Ligue compositions']);
+
+        /** @var FantasyLeagueRecordRepository $leagues */
+        $leagues = self::getContainer()->get(FantasyLeagueRecordRepository::class);
+        $league = $leagues->findByParticipant($this->currentUser($client))[0];
+        $code = $league->code();
+
+        $client->request('GET', '/deconnexion');
+        $client->followRedirect();
+        $this->register($client, 'claire');
+        $this->createTeam($client, 'La Musette');
+        $client->request('GET', '/ligues/rejoindre');
+        $client->submitForm('Rejoindre', ['code' => $code]);
+        $client->followRedirect();
+
+        $client->request('GET', sprintf('/ligues/%d/equipes', $league->id()));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('h1', 'Ligue compositions');
+        self::assertSelectorTextContains('body', 'Les Bordures');
+        self::assertSelectorTextContains('body', 'La Musette');
+        self::assertSelectorTextContains('body', 'Manager manuel');
+        self::assertSelectorTextContains('body', 'Manager claire');
+        self::assertSelectorTextContains('body', 'Tadej Pogacar');
+        self::assertSelectorTextContains('body', 'Profil polyvalent');
+        self::assertSelectorTextContains('body', 'En course');
     }
 
     public function testHeaderLinksToOfficialAndGlobalFantasyClassifications(): void

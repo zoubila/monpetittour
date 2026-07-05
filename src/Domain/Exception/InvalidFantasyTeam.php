@@ -10,11 +10,11 @@ final class InvalidFantasyTeam extends DomainException
 {
     public static function mustContainEightRiders(): self
     {
-        return new self('Une équipe fantasy doit contenir exactement 8 coureurs.');
+        return new self('error.team_must_contain_eight_riders');
     }
 
     public static function budgetExceeded(): self
     {
-        return new self('Le budget fantasy de 1 500 000 € est dépassé.');
+        return new self('error.team_budget_exceeded');
     }
 }
