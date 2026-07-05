@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Classement général officiel - Mon Petit Tour{% endblock %}
+
+{% block body %}
+    <section class="mx-auto max-w-6xl px-4 py-10">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+                <p class="text-sm font-bold uppercase tracking-wide text-emerald-700">Classement officiel</p>
+                <h1 class="mt-2 text-3xl font-extrabold tracking-tight text-slate-950">Classement général des coureurs</h1>
+            </div>
+            <p class="text-sm font-semibold text-slate-600">{{ standings|length }} coureurs classés</p>
+        </div>
+
+        <div class="mt-8 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+            <table class="w-full text-left text-sm">
+                <thead class="bg-slate-100 text-xs font-bold uppercase tracking-wide text-slate-600">
+                    <tr>
+                        <th class="px-4 py-3">Rang</th>
+                        <th class="px-4 py-3">Coureur</th>
+                        <th class="px-4 py-3">Équipe</th>
+                        <th class="px-4 py-3">Temps cumulé</th>
+                        <th class="px-4 py-3">Écart</th>
+                        <th class="px-4 py-3">Statut</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200">
+                    {% for standing in standings %}
+                        <tr class="{{ standing.isInCurrentUserTeam ? 'border-l-4 border-emerald-600 bg-emerald-50/80' : '' }}">
+                            <td class="px-4 py-3 font-extrabold">#{{ standing.rank }}</td>
+                            <td class="px-4 py-3 font-bold">
+                                {% if standing.nationalityFlag %}<span aria-hidden="true">{{ standing.nationalityFlag }}</span>{% endif %}
+                                {{ standing.riderName }}
+                            </td>
+                            <td class="px-4 py-3 text-slate-600">{{ standing.realTeam }}</td>
+                            <td class="px-4 py-3 font-semibold">{{ standing.formattedTotalTime }}</td>
+                            <td class="px-4 py-3 font-semibold text-slate-600">{{ standing.formattedTotalGap }}</td>
+                            <td class="px-4 py-3">
+                                {% if standing.isStillRacing %}
+                                    <span class="rounded-md bg-emerald-50 px-2 py-1 text-xs font-extrabold uppercase text-emerald-800">En course</span>
+                                {% else %}
+                                    <span class="rounded-md bg-rose-100 px-2 py-1 text-xs font-extrabold uppercase text-rose-800">Abandon</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td class="px-4 py-6 text-sm font-semibold text-slate-600" colspan="6">Aucun résultat importé pour le moment.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+{% endblock %}

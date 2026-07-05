@@ -11,9 +11,7 @@ use App\Application\DTO\UserLeagueSummary;
 use App\Application\DTO\UserTeamSummary;
 use App\Application\Repository\FantasyLeagueRepositoryInterface;
 use App\Application\Repository\FantasyTeamRepositoryInterface;
-use App\Application\Repository\RiderReadRepositoryInterface;
 use App\Application\Service\CountryFlagResolver;
-use App\Domain\Entity\FantasyTeam;
 use App\Infrastructure\Doctrine\Entity\ApplicationUser;
 use App\Infrastructure\Doctrine\Entity\FantasyLeagueRecord;
 use App\Infrastructure\Doctrine\Entity\FantasyTeamRecord;
@@ -24,29 +22,47 @@ use App\Infrastructure\Doctrine\Repository\StageRecordRepository;
 final readonly class GetHomeDashboardHandler
 {
     public function __construct(
-        private RiderReadRepositoryInterface $riderRecords,
         private FantasyTeamRepositoryInterface $teams,
         private FantasyLeagueRepositoryInterface $leagues,
         private StageRecordRepository $stages,
         private StageRiderResultRecordRepository $results,
         private CountryFlagResolver $countryFlags,
+        private GetGlobalFantasyTeamClassificationHandler $globalFantasyTeamClassification,
     ) {
     }
 
     public function __invoke(ApplicationUser $user): HomeDashboard
     {
         $team = $this->teams->findOneByOwner($user);
+        $globalStanding = $this->currentUserGlobalStanding($user);
 
         return new HomeDashboard(
             $team instanceof FantasyTeamRecord ? $this->teamSummary($team) : null,
-            $this->riderRecords->countRiders(),
+            $this->results->countStagesWithResults(),
             $this->stages->count([]),
-            FantasyTeam::BUDGET_IN_EUROS,
+            $team instanceof FantasyTeamRecord ? $this->formatDuration($this->teamTotalTimeInSeconds($team)) : 'Aucune équipe',
+            $globalStanding?->rank,
             array_map(
                 fn (FantasyLeagueRecord $league): UserLeagueSummary => $this->leagueSummary($league, $user->username()),
                 $this->leagues->findByParticipant($user),
             ),
         );
+    }
+
+    private function currentUserGlobalStanding(ApplicationUser $user): ?StandingItem
+    {
+        foreach (($this->globalFantasyTeamClassification)($user) as $standing) {
+            if ($standing->isCurrentUser) {
+                return $standing;
+            }
+        }
+
+        return null;
+    }
+
+    private function teamTotalTimeInSeconds(FantasyTeamRecord $team): int
+    {
+        return array_sum($this->results->totalTimesByRiderIds($team->riders()));
     }
 
     private function teamSummary(FantasyTeamRecord $team): UserTeamSummary
@@ -107,6 +123,8 @@ final readonly class GetHomeDashboardHandler
      */
     private function ridersForRecords(array $records): array
     {
+        usort($records, static fn (RiderRecord $left, RiderRecord $right): int => $right->marketValueInEuros() <=> $left->marketValueInEuros());
+
         $riders = [];
         $riderIds = array_map(static fn (RiderRecord $rider): int => $rider->id(), $records);
         $times = $this->results->cumulativeTimesByRiderIds($riderIds);
@@ -129,6 +147,7 @@ final readonly class GetHomeDashboardHandler
                 $totalGap,
                 $totalGap !== null ? $this->formatGap($totalGap) : '-',
                 true,
+                $rider->isStillRacing(),
             );
         }
 

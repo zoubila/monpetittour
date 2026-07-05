@@ -54,6 +54,7 @@ final class RiderRecordRepository extends ServiceEntityRepository implements Rid
                 null,
                 '-',
                 false,
+                $rider->isStillRacing(),
             ),
             $this->findAllOrderedByName(),
         );
@@ -81,6 +82,7 @@ final class RiderRecordRepository extends ServiceEntityRepository implements Rid
             null,
             '-',
             false,
+            $rider->isStillRacing(),
         );
     }
 

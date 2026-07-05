@@ -20,6 +20,7 @@ final readonly class RiderListItem
         public ?int $totalGapInSeconds,
         public string $formattedTotalGap,
         public bool $isInCurrentUserTeam,
+        public bool $isStillRacing,
     ) {
     }
 }

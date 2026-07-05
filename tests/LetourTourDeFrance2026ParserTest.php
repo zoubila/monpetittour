@@ -114,6 +114,51 @@ final class LetourTourDeFrance2026ParserTest extends TestCase
         self::assertSame('https://www.letour.fr/fr/ajax/ranking/2/ite/stage/none', $path);
     }
 
+    public function testItParsesAbandonedRiderNamesForOneStageOnly(): void
+    {
+        $riderNames = (new LetourTourDeFrance2026Parser())->parseAbandonedRiderNames(<<<'HTML'
+            <html>
+                <body>
+                    <section class="ranking withdraws">
+                        <div id="stage-1" class="rankingTables__item no-withdraws">
+                            <table><tr><td>Aucun abandon</td></tr></table>
+                        </div>
+                        <div id="stage-2" class="rankingTables__item">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td>182</td>
+                                        <td class="runner">
+                                            <a href="/fr/coureur/182/groupama-fdj-united/clement-berthet">BERTHET Clément</a>
+                                        </td>
+                                        <td>GROUPAMA-FDJ UNITED</td>
+                                        <td>non partant</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="stage-3" class="rankingTables__item">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td>11</td>
+                                        <td class="runner">
+                                            <a href="/fr/coureur/11/team-visma-lease-a-bike/jonas-vingegaard">VINGEGAARD Jonas</a>
+                                        </td>
+                                        <td>TEAM VISMA | LEASE A BIKE</td>
+                                        <td>abandon</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </body>
+            </html>
+            HTML, 2);
+
+        self::assertSame(['clement berthet'], $riderNames);
+    }
+
     public function testItDoesNotParseTeamStageRankingAsRiderResults(): void
     {
         $results = (new LetourTourDeFrance2026Parser())->parseStageResults(<<<'HTML'

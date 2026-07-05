@@ -102,6 +102,8 @@ final class StageRiderResultRecordRepository extends ServiceEntityRepository imp
     {
         $rows = $this->createQueryBuilder('result')
             ->select('SUM(result.timeInSeconds) AS totalTime')
+            ->innerJoin('result.rider', 'rider')
+            ->andWhere('rider.isStillRacing = true')
             ->groupBy('result.rider')
             ->orderBy('totalTime', 'ASC')
             ->setMaxResults(1)
@@ -113,6 +115,14 @@ final class StageRiderResultRecordRepository extends ServiceEntityRepository imp
         }
 
         return (int) $rows[0]['totalTime'];
+    }
+
+    public function countStagesWithResults(): int
+    {
+        return (int) $this->createQueryBuilder('result')
+            ->select('COUNT(DISTINCT result.stage)')
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
     /**

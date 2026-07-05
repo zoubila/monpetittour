@@ -82,6 +82,7 @@ final readonly class ListRidersHandler
             $totalGap,
             $totalGap !== null ? $this->formatGap($totalGap) : '-',
             $isInCurrentUserTeam,
+            $rider->isStillRacing,
         );
     }
 

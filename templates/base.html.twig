@@ -18,8 +18,18 @@
         <script src="https://cdn.tailwindcss.com"></script>
         <style>
             .dark body {
-                background: #020617;
                 color: #f8fafc;
+            }
+
+            body {
+                background-image: linear-gradient(rgba(248, 250, 252, 0.72), rgba(248, 250, 252, 0.72)), url('{{ asset('UI/background.png') }}');
+                background-attachment: fixed;
+                background-position: center;
+                background-size: cover;
+            }
+
+            .dark body {
+                background-image: linear-gradient(rgba(2, 6, 23, 0.78), rgba(2, 6, 23, 0.78)), url('{{ asset('UI/background.png') }}');
             }
 
             .dark .bg-white,
@@ -67,6 +77,10 @@
             input.peer:checked + span > span {
                 transform: translateX(1.25rem);
             }
+
+            input[data-theme-toggle]:checked + span > span {
+                transform: translateX(1.25rem);
+            }
         </style>
         {% block stylesheets %}
         {% endblock %}
@@ -82,36 +96,38 @@
         <script src="https://cdn.jsdelivr.net/npm/frankenphp-hot-reload/+esm" type="module"></script>
         {% endif %}
     </head>
-    <body class="min-h-screen bg-slate-50 text-slate-950">
+    <body class="min-h-screen text-slate-950">
         {% if app.user %}
-            <header class="border-b border-slate-200 bg-white">
+            <header class="border-b border-slate-200 bg-white/95 backdrop-blur">
                 <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-                    <a class="text-lg font-extrabold tracking-tight text-slate-950" href="{{ path('home') }}">Mon Petit Tour</a>
+                    <a class="flex items-center" href="{{ path('home') }}" aria-label="Retour accueil">
+                        <img class="h-14 w-auto" src="{{ asset('UI/logo.png') }}" alt="Mon Petit Tour">
+                    </a>
                     <nav class="flex items-center gap-4 text-sm font-semibold text-slate-700">
                         <a class="hover:text-emerald-700" href="{{ path('home') }}">Accueil</a>
                         <a class="hover:text-emerald-700" href="{{ path('rider_index') }}">Coureurs</a>
-                        <button
-                            class="rounded-md border border-slate-300 px-3 py-2 hover:border-emerald-600 hover:text-emerald-700"
-                            type="button"
-                            data-theme-toggle
-                            aria-label="Changer de thème"
-                        >
+                        <a class="hover:text-emerald-700" href="{{ path('official_rider_classification') }}">Classement officiel</a>
+                        <a class="hover:text-emerald-700" href="{{ path('global_fantasy_team_classification') }}">Classement petit toureur</a>
+                        <label class="inline-flex cursor-pointer items-center gap-2" title="Changer de thème">
+                            <input class="sr-only" type="checkbox" data-theme-toggle aria-label="Changer de thème">
+                            <span class="h-6 w-11 rounded-full bg-slate-300 p-1 transition">
+                                <span class="block h-4 w-4 rounded-full bg-white transition"></span>
+                            </span>
                             <span data-theme-toggle-label>Thème sombre</span>
-                        </button>
+                        </label>
                         <a class="rounded-md border border-slate-300 px-3 py-2 hover:border-emerald-600 hover:text-emerald-700" href="{{ path('app_logout') }}">Déconnexion</a>
                     </nav>
                 </div>
             </header>
         {% else %}
             <div class="fixed right-4 top-4 z-50">
-                <button
-                    class="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-800 shadow-sm hover:border-emerald-600 hover:text-emerald-700"
-                    type="button"
-                    data-theme-toggle
-                    aria-label="Changer de thème"
-                >
+                <label class="inline-flex cursor-pointer items-center gap-2 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-800 shadow-sm hover:border-emerald-600 hover:text-emerald-700" title="Changer de thème">
+                    <input class="sr-only" type="checkbox" data-theme-toggle aria-label="Changer de thème">
+                    <span class="h-6 w-11 rounded-full bg-slate-300 p-1 transition">
+                        <span class="block h-4 w-4 rounded-full bg-white transition"></span>
+                    </span>
                     <span data-theme-toggle-label>Thème sombre</span>
-                </button>
+                </label>
             </div>
         {% endif %}
         <main>
@@ -126,22 +142,26 @@
                     return;
                 }
 
-                const refreshLabels = () => {
+                const refreshToggles = () => {
                     const isDark = document.documentElement.classList.contains('dark');
+                    toggles.forEach((toggle) => {
+                        toggle.checked = isDark;
+                    });
                     labels.forEach((label) => {
                         label.textContent = isDark ? 'Thème clair' : 'Thème sombre';
                     });
                 };
 
                 toggles.forEach((toggle) => {
-                    toggle.addEventListener('click', () => {
-                        const isDark = document.documentElement.classList.toggle('dark');
+                    toggle.addEventListener('change', () => {
+                        const isDark = toggle.checked;
+                        document.documentElement.classList.toggle('dark', isDark);
                         localStorage.setItem('theme', isDark ? 'dark' : 'light');
-                        refreshLabels();
+                        refreshToggles();
                     });
                 });
 
-                refreshLabels();
+                refreshToggles();
             })();
         </script>
     </body>

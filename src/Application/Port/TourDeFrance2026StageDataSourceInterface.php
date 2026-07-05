@@ -18,4 +18,9 @@ interface TourDeFrance2026StageDataSourceInterface
      * @return list<ImportedStageResult>
      */
     public function stageResults(int $stageNumber): array;
+
+    /**
+     * @return list<string>
+     */
+    public function abandonedRiderNames(int $stageNumber): array;
 }

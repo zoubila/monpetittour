@@ -11,9 +11,10 @@ final readonly class HomeDashboard
      */
     public function __construct(
         public ?UserTeamSummary $team,
-        public int $riderCount,
-        public int $stageCount,
-        public int $teamBudgetInEuros,
+        public int $completedStageCount,
+        public int $totalStageCount,
+        public string $formattedTeamTotalTime,
+        public ?int $globalFantasyRank,
         public array $leagues,
     ) {
     }

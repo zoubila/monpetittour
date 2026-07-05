@@ -4,9 +4,9 @@
 
 {% block body %}
     <section class="flex min-h-screen items-center justify-center px-4 py-10">
-        <div class="w-full max-w-md rounded-lg border border-slate-200 bg-white p-8 shadow-sm">
-            <p class="text-sm font-bold uppercase tracking-wide text-emerald-700">Mon Petit Tour</p>
-            <h1 class="mt-2 text-3xl font-extrabold tracking-tight text-slate-950">Créer un compte</h1>
+        <div class="w-full max-w-md rounded-lg border border-slate-200 bg-white/95 p-8 shadow-sm backdrop-blur">
+            <img class="mx-auto h-44 w-auto" src="{{ asset('UI/logo.png') }}" alt="Mon Petit Tour">
+            <h1 class="mt-2 text-center text-1xl font-extrabold tracking-tight text-slate-950">Créer un compte</h1>
 
             {% if error %}
                 <div class="mt-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-800">

@@ -36,9 +36,9 @@ final readonly class ImportTourDeFrance2026StageResultsHandler
             throw new \RuntimeException(sprintf('Stage %d was not found in imported Tour de France stages.', $stageNumber));
         }
 
+        $unmatchedRiderNames = $this->markAbandonedRidersFromLetour($stageNumber);
         $importedResults = $this->source->stageResults($stageNumber);
         $matchedResults = [];
-        $unmatchedRiderNames = [];
 
         foreach ($importedResults as $importedResult) {
             $rider = $this->riders->findOneByImportedName($importedResult->riderName);
@@ -78,6 +78,27 @@ final readonly class ImportTourDeFrance2026StageResultsHandler
         $this->entityManager->flush();
 
         return new ImportStageResultsReport($stageNumber, count($matchedResults), []);
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function markAbandonedRidersFromLetour(int $stageNumber): array
+    {
+        $unmatchedRiderNames = [];
+
+        foreach ($this->source->abandonedRiderNames($stageNumber) as $riderName) {
+            $rider = $this->riders->findOneByImportedName($riderName);
+
+            if (!$rider instanceof RiderRecord) {
+                $unmatchedRiderNames[] = $riderName;
+                continue;
+            }
+
+            $rider->markAbandoned();
+        }
+
+        return array_values(array_unique($unmatchedRiderNames));
     }
 
     /**

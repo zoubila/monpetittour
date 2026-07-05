@@ -128,6 +128,38 @@ final class LetourTourDeFrance2026Parser
         return null;
     }
 
+    /**
+     * @return list<string>
+     */
+    public function parseAbandonedRiderNames(string $html, int $stageNumber): array
+    {
+        $document = $this->document($html);
+        $xpath = new \DOMXPath($document);
+        $stageNodes = $xpath->query(sprintf('//*[@id="stage-%d"]', $stageNumber));
+
+        if ($stageNodes === false || $stageNodes->length === 0) {
+            return [];
+        }
+
+        $stageNode = $stageNodes->item(0);
+        if (!$stageNode instanceof \DOMElement || str_contains($stageNode->getAttribute('class'), 'no-withdraws')) {
+            return [];
+        }
+
+        $riderNames = [];
+        foreach ($stageNode->getElementsByTagName('a') as $link) {
+            $href = $link->getAttribute('href');
+            if (!str_contains($href, '/fr/coureur/')) {
+                continue;
+            }
+
+            $slugName = $this->riderNameFromLetourRiderPath($href);
+            $riderNames[] = $slugName !== null ? $slugName : $this->cleanRiderName($link->textContent);
+        }
+
+        return array_values(array_unique(array_filter($riderNames, static fn (string $name): bool => $name !== '')));
+    }
+
     private function document(string $html): \DOMDocument
     {
         $document = new \DOMDocument();
@@ -222,15 +254,26 @@ final class LetourTourDeFrance2026Parser
                 continue;
             }
 
-            $pathParts = explode('/', trim($link->getAttribute('href'), '/'));
-            $slug = end($pathParts);
+            $riderName = $this->riderNameFromLetourRiderPath($link->getAttribute('href'));
 
-            if ($slug !== '') {
-                return str_replace('-', ' ', $slug);
+            if ($riderName !== null) {
+                return $riderName;
             }
         }
 
         return $this->cleanRiderName($fallbackName);
+    }
+
+    private function riderNameFromLetourRiderPath(string $path): ?string
+    {
+        $pathParts = explode('/', trim($path, '/'));
+        $slug = end($pathParts);
+
+        if ($slug === '') {
+            return null;
+        }
+
+        return str_replace('-', ' ', $slug);
     }
 
     private function letourDurationToSeconds(string $duration): ?int

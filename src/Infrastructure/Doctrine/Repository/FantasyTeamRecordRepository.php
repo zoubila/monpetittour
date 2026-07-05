@@ -29,6 +29,19 @@ final class FantasyTeamRecordRepository extends ServiceEntityRepository implemen
         return $this->findOneBy(['owner' => $owner]);
     }
 
+    /**
+     * @return list<FantasyTeamRecord>
+     */
+    public function findAllTeams(): array
+    {
+        return $this->createQueryBuilder('team')
+            ->innerJoin('team.owner', 'owner')
+            ->orderBy('team.name', 'ASC')
+            ->addOrderBy('owner.username', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     public function save(FantasyTeamRecord $team): void
     {
         $this->getEntityManager()->persist($team);

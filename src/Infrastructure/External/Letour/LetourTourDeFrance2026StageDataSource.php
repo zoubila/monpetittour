@@ -63,6 +63,14 @@ final readonly class LetourTourDeFrance2026StageDataSource implements TourDeFran
         return $this->parser->parseStageResults($this->fetch($stageIndividualResultsPath));
     }
 
+    /**
+     * @return list<string>
+     */
+    public function abandonedRiderNames(int $stageNumber): array
+    {
+        return $this->parser->parseAbandonedRiderNames($this->fetch('/abandon'), $stageNumber);
+    }
+
     private function fetch(string $path): string
     {
         $response = $this->httpClient->request('GET', $this->url($path), [

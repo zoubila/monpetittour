@@ -48,6 +48,7 @@ final readonly class GetRiderDetailsHandler
             $totalGap,
             $totalGap !== null ? $this->formatGap($totalGap) : '-',
             in_array($rider->id, $this->currentUserRiderIds($user), true),
+            $rider->isStillRacing,
         );
     }
 

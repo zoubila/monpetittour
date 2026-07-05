@@ -23,6 +23,10 @@ final class FantasyHomeFlowTest extends WebTestCase
         $client->request('GET', '/');
         self::assertSelectorTextContains('body', 'Tu n’as pas encore composé ton équipe');
         self::assertSelectorTextContains('body', 'Tu ne participes encore à aucune ligue');
+        self::assertSelectorTextContains('body', 'Étapes courues');
+        self::assertSelectorTextContains('body', 'Temps équipe');
+        self::assertSelectorTextContains('body', 'Classement petit toureur');
+        self::assertSelectorTextContains('body', 'Aucune équipe');
 
         $client->request('GET', '/mon-equipe/creation');
         self::assertResponseIsSuccessful();
@@ -47,6 +51,8 @@ final class FantasyHomeFlowTest extends WebTestCase
         $client->followRedirect();
         self::assertSelectorTextContains('body', 'Les Bordures');
         self::assertSelectorTextContains('body', 'Jonas Vingegaard');
+        self::assertSelectorTextContains('body', 'leader');
+        self::assertSelectorTextContains('body', '#1');
 
         $client->request('GET', '/ligues/creation');
         $client->submitForm('Créer la ligue', ['name' => 'Ligue du samedi']);
@@ -121,6 +127,36 @@ final class FantasyHomeFlowTest extends WebTestCase
         self::assertSelectorTextContains('body', 'Tadej Pogacar');
         self::assertStringContainsString('data-stage-rider-team-toggle', (string) $client->getResponse()->getContent());
         self::assertStringContainsString('data-stage-rider-row', (string) $client->getResponse()->getContent());
+        self::assertStringContainsString(
+            'border-l-4 border-emerald-600 bg-emerald-50/80',
+            (string) $client->getResponse()->getContent(),
+        );
+    }
+
+    public function testHeaderLinksToOfficialAndGlobalFantasyClassifications(): void
+    {
+        $client = self::createClient();
+        $this->recreateDatabaseSchema();
+        $this->register($client, 'manuel');
+        $this->createTeam($client, 'Les Bordures');
+
+        $client->request('GET', '/');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('nav', 'Classement officiel');
+        self::assertSelectorTextContains('nav', 'Classement petit toureur');
+        self::assertStringContainsString('data-theme-toggle', (string) $client->getResponse()->getContent());
+
+        $client->request('GET', '/classement-general-officiel-coureurs');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('h1', 'Classement général des coureurs');
+        self::assertSelectorTextContains('body', 'Tadej Pogacar');
+        self::assertSelectorTextContains('body', 'Temps cumulé');
+
+        $client->request('GET', '/classement-petit-toureur');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('h1', 'Classement petit toureur');
+        self::assertSelectorTextContains('body', 'Les Bordures');
+        self::assertSelectorTextContains('body', 'manuel');
         self::assertStringContainsString(
             'border-l-4 border-emerald-600 bg-emerald-50/80',
             (string) $client->getResponse()->getContent(),

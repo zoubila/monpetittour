@@ -6,6 +6,8 @@ namespace App\Tests;
 
 use App\Application\DTO\ImportedStage;
 use App\Application\DTO\ImportedStageResult;
+use App\Application\DTO\OfficialRiderStandingItem;
+use App\Application\Handler\GetOfficialRiderGeneralClassificationHandler;
 use App\Application\Handler\ImportTourDeFrance2026StageResultsHandler;
 use App\Application\Handler\ImportTourDeFrance2026StagesHandler;
 use App\Application\Port\TourDeFrance2026StageDataSourceInterface;
@@ -47,8 +49,13 @@ final class ImportTourDeFrance2026StageResultsHandlerTest extends KernelTestCase
             {
                 return [
                     new ImportedStageResult(1, 'T. POGACAR', 'UAE TEAM EMIRATES XRG', 16_335, 0),
-                    new ImportedStageResult(2, 'J. VINGEGAARD', 'TEAM VISMA | LEASE A BIKE', 16_338, 3),
+                    new ImportedStageResult(2, 'J. VINGEGAARD', 'TEAM VISMA | LEASE A BIKE', 16_000, 0),
                 ];
+            }
+
+            public function abandonedRiderNames(int $stageNumber): array
+            {
+                return ['J. VINGEGAARD'];
             }
         };
 
@@ -65,10 +72,12 @@ final class ImportTourDeFrance2026StageResultsHandlerTest extends KernelTestCase
         $report = $handler(1);
         $stage = $stages->findOneByNumber(1);
         $tadejPogacar = $riders->findOneBySlug('tadej-pogacar');
+        $jonasVingegaard = $riders->findOneBySlug('jonas-vingegaard');
         $seppKuss = $riders->findOneBySlug('sepp-kuss');
 
         self::assertInstanceOf(StageRecord::class, $stage);
         self::assertNotNull($tadejPogacar);
+        self::assertNotNull($jonasVingegaard);
         self::assertNotNull($seppKuss);
         self::assertSame('Barcelona', $stage->startLocation());
         self::assertSame('Barcelona', $stage->finishLocation());
@@ -115,13 +124,29 @@ final class ImportTourDeFrance2026StageResultsHandlerTest extends KernelTestCase
 
         $stageResults = $results->findByStage($stage);
         self::assertCount(2, $stageResults);
-        self::assertSame('Tadej Pogacar', $stageResults[0]->rider()->name());
-        self::assertSame(16_335, $stageResults[0]->timeInSeconds());
+        self::assertSame('Jonas Vingegaard', $stageResults[0]->rider()->name());
+        self::assertSame(16_000, $stageResults[0]->timeInSeconds());
         self::assertSame(0, $stageResults[0]->gapInSeconds());
-        self::assertSame('Jonas Vingegaard', $stageResults[1]->rider()->name());
-        self::assertSame(16_338, $stageResults[1]->timeInSeconds());
-        self::assertSame(3, $stageResults[1]->gapInSeconds());
+        self::assertSame('Tadej Pogacar', $stageResults[1]->rider()->name());
+        self::assertSame(16_335, $stageResults[1]->timeInSeconds());
+        self::assertSame(0, $stageResults[1]->gapInSeconds());
         self::assertTrue($tadejPogacar->isStillRacing());
+        self::assertFalse($jonasVingegaard->isStillRacing());
         self::assertFalse($seppKuss->isStillRacing());
+
+        /** @var GetOfficialRiderGeneralClassificationHandler $classification */
+        $classification = self::getContainer()->get(GetOfficialRiderGeneralClassificationHandler::class);
+        $officialStandings = $classification();
+
+        self::assertSame('Tadej Pogacar', $officialStandings[0]->riderName);
+        self::assertSame('-', $officialStandings[0]->formattedTotalGap);
+
+        $jonasStanding = array_values(array_filter(
+            $officialStandings,
+            static fn (OfficialRiderStandingItem $standing): bool => $standing->riderName === 'Jonas Vingegaard',
+        ))[0] ?? null;
+
+        self::assertNotNull($jonasStanding);
+        self::assertGreaterThan($officialStandings[0]->rank, $jonasStanding->rank);
     }
 }

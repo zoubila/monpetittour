@@ -70,7 +70,12 @@
                             </h2>
                             <p class="mt-1 text-sm font-medium text-slate-600">{{ rider.realTeam }} · {{ rider.nationality }}</p>
                         </div>
-                        <p class="shrink-0 rounded-md bg-emerald-50 px-3 py-1 text-sm font-extrabold text-emerald-800">{{ rider.marketValueInEuros|number_format(0, ',', ' ') }} €</p>
+                        <div class="flex shrink-0 flex-col items-end gap-2">
+                            <p class="rounded-md bg-emerald-50 px-3 py-1 text-sm font-extrabold text-emerald-800">{{ rider.marketValueInEuros|number_format(0, ',', ' ') }} €</p>
+                            {% if not rider.isStillRacing %}
+                                <p class="rounded bg-rose-100 px-2 py-0.5 text-[11px] font-extrabold uppercase text-rose-800">Abandon</p>
+                            {% endif %}
+                        </div>
                     </div>
                     <div class="mt-4 grid gap-2 text-sm font-semibold text-slate-700 sm:grid-cols-3">
                         <p>{{ rider.specialty ?? 'Profil polyvalent' }}</p>
