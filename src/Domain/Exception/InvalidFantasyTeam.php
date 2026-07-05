@@ -15,6 +15,6 @@ final class InvalidFantasyTeam extends DomainException
 
     public static function budgetExceeded(): self
     {
-        return new self('Le budget fantasy de 1 200 000 € est dépassé.');
+        return new self('Le budget fantasy de 1 500 000 € est dépassé.');
     }
 }
