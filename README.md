@@ -1,37 +1,37 @@
 # Mon Petit Tour
 
-Application Symfony de fantasy cycling entre amis autour du Tour de France.
+Symfony fantasy cycling application for playing with friends around the Tour de France.
 
-Chaque utilisateur compose une seule equipe fantasy de 8 coureurs avec un budget maximum de 1 500 000 EUR. Cette equipe est commune a toutes ses ligues. Apres chaque etape, les temps des coureurs sont importes, additionnes, puis utilises pour calculer les classements.
+Each user builds one fantasy team of 8 riders with a maximum budget of EUR 1,500,000. This team is shared across all leagues the user joins. After each stage, rider times are imported, aggregated, and used to compute rankings.
 
-## Fonctionnement metier
+## Business Rules
 
-- Un utilisateur cree un compte avec un username et un mot de passe.
-- Une fois connecte, il compose une equipe de 8 coureurs.
-- Il peut creer une ligue, partager son code, ou rejoindre une ligue existante.
-- Les classements de ligue comparent les equipes des participants de cette ligue.
-- Le classement "petit toureur" compare toutes les equipes fantasy de l'application, meme hors ligues communes.
-- Le classement officiel des coureurs additionne les temps reels importes sur toutes les etapes parcourues.
-- Les coureurs abandonnes sont affiches comme tels et restent derriere les coureurs encore en course dans le classement officiel.
+- A user creates an account with a username and password.
+- Once authenticated, the user builds one team of 8 riders.
+- A user can create a league, share its code, or join an existing league.
+- League rankings compare the teams of participants in that league.
+- The "Petit Toureur" ranking compares every fantasy team in the application, even if users are not in the same league.
+- The official rider general classification sums imported real stage times across all completed stages.
+- Abandoned riders are displayed as abandoned and are ranked behind riders who are still racing in the official rider classification.
 
-## Donnees
+## Data
 
-L'application utilise PostgreSQL.
+The application uses PostgreSQL.
 
-Les donnees principales sont :
+Main data tables:
 
-- `rider` : coureurs, equipe officielle, nationalite, valeur, specialite, statut en course.
-- `stage` : etapes du Tour, numero officiel, depart, arrivee, distance, denivele, image de profil.
-- `stage_rider_result` : temps et ecart d'un coureur sur une etape.
-- `application_user` : utilisateurs de l'application.
-- `fantasy_team` : equipe fantasy unique d'un utilisateur.
-- `fantasy_league` : ligues et participants.
+- `rider`: riders, official team, nationality, market value, specialty, racing status.
+- `stage`: Tour stages, official stage number, start, finish, distance, elevation gain, profile image.
+- `stage_rider_result`: rider time and gap for a given stage.
+- `application_user`: application users.
+- `fantasy_team`: one fantasy team per user.
+- `fantasy_league`: leagues and participants.
 
-Les imports actuels ne passent pas par une API payante. Ils s'appuient sur les pages publiques de letour.fr.
+Current imports do not rely on a paid API. They scrape public pages from letour.fr.
 
 ## Architecture
 
-Le projet suit une organisation DDD/CQRS pragmatique :
+The project follows a pragmatic DDD/CQRS structure:
 
 ```txt
 src/
@@ -41,39 +41,39 @@ src/
 └── UI/
 ```
 
-- `Domain` contient les concepts metier et invariants.
-- `Application` contient les handlers, DTOs, commandes, queries et ports.
-- `Infrastructure` contient Doctrine, fixtures, scrapers et implementations techniques.
-- `UI` contient les controllers, formulaires Symfony et commandes console.
+- `Domain` contains business concepts and invariants.
+- `Application` contains handlers, DTOs, commands, queries, and ports.
+- `Infrastructure` contains Doctrine, fixtures, scrapers, and technical implementations.
+- `UI` contains controllers, Symfony forms, and console commands.
 
-Les controllers restent fins : ils deleguent aux handlers applicatifs.
+Controllers are kept thin and delegate business work to application handlers.
 
-## Demarrage local
+## Local Setup
 
-Prerequis :
+Requirements:
 
 - Docker
 - Docker Compose
 
-Demarrer l'environnement de dev :
+Start the development stack:
 
 ```bash
 make up
 ```
 
-Installer les dependances si besoin :
+Install dependencies if needed:
 
 ```bash
 make composer-install
 ```
 
-L'application est disponible sur :
+The application is available at:
 
 ```txt
 http://localhost:8080
 ```
 
-La base PostgreSQL de dev est exposee sur :
+The development PostgreSQL database is exposed at:
 
 ```txt
 Host: localhost
@@ -83,7 +83,7 @@ User: monpetittour
 Password: monpetittour
 ```
 
-## Commandes utiles
+## Useful Commands
 
 ```bash
 make up
@@ -96,61 +96,61 @@ make test
 make stan
 ```
 
-Executer une commande Symfony :
+Run a Symfony command:
 
 ```bash
 make console
 ```
 
-ou directement :
+or directly:
 
 ```bash
 docker compose -f compose.dev.yaml exec app php bin/console
 ```
 
-## Imports Tour de France 2026
+## Tour de France 2026 Imports
 
-Importer ou mettre a jour les etapes :
+Import or update stages:
 
 ```bash
 docker compose -f compose.dev.yaml exec app php bin/console app:tour-de-france-2026:import-stages
 ```
 
-Importer la startlist publiee :
+Import the published startlist:
 
 ```bash
 docker compose -f compose.dev.yaml exec app php bin/console app:tour-de-france-2026:import-published-startlist
 ```
 
-Importer les resultats d'une etape :
+Import stage results:
 
 ```bash
 docker compose -f compose.dev.yaml exec app php bin/console app:tour-de-france-2026:import-stage-results 2
 ```
 
-L'import de resultats :
+The stage result import:
 
-- verifie d'abord la page des abandons ;
-- marque les coureurs concernes avec `is_still_racing = false` ;
-- importe les temps et ecarts de l'etape ;
-- remplace les resultats existants de cette etape pour rester idempotent.
+- checks the withdrawal page first;
+- marks matching riders with `is_still_racing = false`;
+- imports rider times and gaps for the stage;
+- replaces existing results for that stage so the command stays idempotent.
 
-## Tests et qualite
+## Tests and Quality
 
-Avant chaque push :
+Before pushing:
 
 ```bash
 make test
 make stan
 ```
 
-La CI GitHub execute aussi PHPUnit et PHPStan avant le deploiement.
+GitHub Actions also runs PHPUnit and PHPStan before deployment.
 
 ## Production
 
-Le deploiement production passe par GitHub Actions sur `master`.
+Production deployment runs through GitHub Actions on `master`.
 
-Le serveur execute :
+The server executes:
 
 ```bash
 cd /srv/apps/monpetittour
@@ -159,26 +159,26 @@ docker compose up -d --build
 docker image prune -f
 ```
 
-Apres un deploiement qui modifie la base, executer les migrations sur le serveur :
+After deploying changes that modify the database schema, run migrations on the server:
 
 ```bash
 docker compose exec app php bin/console doctrine:migrations:migrate --no-interaction --env=prod
 ```
 
-Puis lancer les imports necessaires en prod avec `--env=prod`.
+Then run the required imports in production with `--env=prod`.
 
 ## Assets
 
-Les images publiques sont dans `public/`.
+Public images are stored in `public/`.
 
-Exemples :
+Examples:
 
 ```txt
 public/UI/logo.png
 public/UI/background.png
 ```
 
-Dans Twig, elles sont referencees avec :
+In Twig, reference them with:
 
 ```twig
 {{ asset('UI/logo.png') }}
